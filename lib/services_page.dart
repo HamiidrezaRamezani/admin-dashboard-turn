@@ -171,74 +171,152 @@ class _ServicesPageState extends State<ServicesPage> {
           showDialog(
             context: context,
             builder: (BuildContext context) {
-              return AlertDialog(
-                title: Text('ایجاد یک خدمت'),
-                content: SingleChildScrollView(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
+              return Directionality(
+                textDirection: TextDirection.rtl,
+                child: AlertDialog(
+                  title: const Row(
                     children: [
-                      Text('نام خدمت'),
-                      TextField(
-                        decoration: InputDecoration(
-                          hintText: 'نام خدمت را وارد کنید',
-                        ),
-                      ),
-                      SizedBox(height: 10),
-                      Text('توضیحات'),
-                      TextField(
-                        decoration: InputDecoration(
-                          hintText: 'توضیحات را وارد کنید',
-                        ),
-                      ),
-                      SizedBox(height: 10),
-                      Text('انتخاب تصویر'),
-                      Row(
-                        children: [
-                          Icon(Icons.image),
-                          TextButton(
-                            onPressed: () {
-                              // عملکرد انتخاب تصویر
-                            },
-                            child: Text('انتخاب تصویر'),
-                          ),
-                        ],
-                      ),
-                      SizedBox(height: 10),
-                      Row(
-                        children: [
-                          Switch(
-                            value: true, // وضعیت سوئیچ
-                            onChanged: (bool value) {
-                              // تغییر وضعیت سوئیچ
-                            },
-                          ),
-                          Text('فعال برای همه')
-                        ],
-                      ),
-                      SizedBox(height: 10),
-                      Text('هزینه هر لینک'),
-                      TextField(
-                        decoration: InputDecoration(
-                          hintText: 'هزینه را وارد کنید',
-                        ),
-                      ),
+                      Text('ایجاد یک خدمت', style: TextStyle(fontSize: 16.0, fontFamily: "bold", color: Colors.black))
                     ],
                   ),
+                  content: SingleChildScrollView(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Container(
+                          height: 56.0,
+                          width: MediaQuery.of(context).size.width * 0.5,
+                          decoration: BoxDecoration(
+                            color: Color(0xFFD9D9D9),
+                            borderRadius: BorderRadius.circular(12.0)
+                          ),
+                          child: TextField(
+                            decoration: InputDecoration(
+                                hintText: 'نام خدمت را وارد کنید',
+                                hintStyle: TextStyle(fontSize: 14.0, fontFamily: "regular", color: Colors.grey),
+                                border: InputBorder.none,
+                              contentPadding: EdgeInsets.symmetric(horizontal: 12.0, vertical: 0.0)
+                            ),
+                          ),
+                        ),
+                        SizedBox(height: 16),
+                        Container(
+                          height: 156.0,
+                          width: MediaQuery.of(context).size.width * 0.5,
+                          decoration: BoxDecoration(
+                              color: Color(0xFFD9D9D9),
+                              borderRadius: BorderRadius.circular(12.0)
+                          ),
+                          child: TextField(
+                            maxLines: 5,
+                            decoration: InputDecoration(
+                                hintText: 'توضیحات خدمت را وارد کنید',
+                                hintStyle: TextStyle(fontSize: 14.0, fontFamily: "regular", color: Colors.grey),
+                                border: InputBorder.none,
+                                contentPadding: EdgeInsets.symmetric(horizontal: 12.0, vertical: 16.0)
+                            ),
+                          ),
+                        ),
+                        SizedBox(height: 16),
+                        Container(
+                          height: 56.0,
+                          width: MediaQuery.of(context).size.width * 0.5,
+                          decoration: BoxDecoration(
+                              color: Color(0xFFD9D9D9),
+                              borderRadius: BorderRadius.circular(12.0)
+                          ),
+                          child: Padding(
+                            padding: const EdgeInsets.only(left: 12.0, right: 12.0),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Text('انتخاب تصویر', style: TextStyle(fontSize: 14.0, fontFamily: "regular", color: Colors.black),),
+                                IconButton(icon: Icon(Icons.attach_file),onPressed: (){},),
+                              ],
+                            ),
+                          )
+                        ),
+                        SizedBox(height: 16),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Container(
+                                height: 56.0,
+                                width: MediaQuery.of(context).size.width * 0.24,
+                                decoration: BoxDecoration(
+                                    color: Color(0xFFD9D9D9),
+                                    borderRadius: BorderRadius.circular(12.0)
+                                ),
+                                child: Padding(
+                                  padding: const EdgeInsets.only(left: 12.0, right: 12.0),
+                                  child: TextField(
+                                    decoration: InputDecoration(
+                                        hintText: 'هزینه هر بلیط',
+                                        hintStyle: TextStyle(fontSize: 14.0, fontFamily: "regular", color: Colors.grey),
+                                        border: InputBorder.none,
+                                        contentPadding: EdgeInsets.symmetric(horizontal: 12.0, vertical: 16.0)
+                                    ),
+                                  ),
+                                )
+                            ),
+                            Container(
+                                height: 56.0,
+                                width: MediaQuery.of(context).size.width * 0.24,
+                                decoration: BoxDecoration(
+                                    color: Color(0xFFD9D9D9),
+                                    borderRadius: BorderRadius.circular(12.0)
+                                ),
+                                child: Padding(
+                                  padding: const EdgeInsets.only(left: 12.0, right: 12.0),
+                                  child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      Text('فعال برای همه', style: TextStyle(fontSize: 14.0, fontFamily: "regular", color: Colors.black),),
+                                      Switch(
+                                        value: true, // وضعیت سوئیچ
+                                        activeColor: Color(0xFF628DFF),
+                                        onChanged: (bool value) {
+                                          // تغییر وضعیت سوئیچ
+                                        },
+                                      ),
+
+                                    ],
+                                  ),
+                                )
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+                  actions: [
+                    ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Color(0xFF628DFF),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(4.0)
+                        )
+                      ),
+                      onPressed: () {
+                        // عملکرد ارسال اطلاعات
+                      },
+                      child: Text('ایجاد خدمت',  style: TextStyle(fontSize: 14.0, fontFamily: "regular", color: Colors.white)),
+                    ),
+                    TextButton(
+                      style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.white,
+                          shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(4.0),
+                            side: BorderSide(color: Color(0xFF628DFF), width: 1.0)
+                          )
+                      ),
+                      onPressed: () {
+                        Navigator.of(context).pop();
+                      },
+                      child: Text('لغو', style: TextStyle(fontSize: 14.0, fontFamily: "regular", color: Color(0xFF628DFF))),
+                    ),
+                  ],
                 ),
-                actions: [
-                  TextButton(
-                    onPressed: () {
-                      Navigator.of(context).pop();
-                    },
-                    child: Text('لغو'),
-                  ),
-                  ElevatedButton(
-                    onPressed: () {
-                      // عملکرد ارسال اطلاعات
-                    },
-                    child: Text('ایجاد خدمت'),
-                  ),
-                ],
               );
             },
           );

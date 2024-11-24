@@ -32,7 +32,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
               children: [
                 MenuItem(
                   title: 'خدمات',
-                  icon: Icons.home,
+                  icon: Icons.home_repair_service_outlined,
                   isSelected: selectedIndex == 0,
                   onTap: () {
                     setState(() {
@@ -42,7 +42,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                 ),
                 MenuItem(
                   title: 'کاربران',
-                  icon: Icons.settings,
+                  icon: Icons.supervised_user_circle_sharp,
                   isSelected: selectedIndex == 1,
                   onTap: () {
                     setState(() {
@@ -52,7 +52,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                 ),
                 MenuItem(
                   title: 'گزارشات',
-                  icon: Icons.info,
+                  icon: Icons.report,
                   isSelected: selectedIndex == 2,
                   onTap: () {
                     setState(() {
@@ -100,7 +100,7 @@ class MenuItem extends StatelessWidget {
         style: TextStyle(
           color: isSelected ? Colors.blue : Colors.black,
           fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
-          fontFamily: "Medium",
+          fontFamily: "medium",
           fontSize: 20.0
         ),
       ),
