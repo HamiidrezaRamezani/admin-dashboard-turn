@@ -1,346 +1,932 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:turn_rating_launcher/api/data/services/services_api_server.dart';
+import 'api/models/get_services_models/get_services_model.dart';
 
 class ServicesPage extends StatefulWidget {
-  const ServicesPage({super.key});
-
   @override
-  State<ServicesPage> createState() => _ServicesPageState();
+  _ServicesPageState createState() => _ServicesPageState();
 }
 
 class _ServicesPageState extends State<ServicesPage> {
-  List<ServiceItem> items = [
-    ServiceItem(
-        name: 'خدمت شماره یک', price: '50000', isActivated: false, turn: '5'),
-    ServiceItem(
-        name: 'خدمت شماره دو', price: '70000', isActivated: true, turn: '4'),
-    ServiceItem(
-        name: 'خدمت شماره سه', price: '60000', isActivated: false, turn: '6'),
-    ServiceItem(
-        name: 'خدمت شماره چهار', price: '110000', isActivated: true, turn: '7'),
-    ServiceItem(
-        name: 'خدمت شماره پنج', price: '20000', isActivated: false, turn: '9'),
-  ];
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+
+  TextEditingController nameController = TextEditingController();
+  TextEditingController describeController = TextEditingController();
+  TextEditingController numberOfTicketController = TextEditingController();
+  TextEditingController costOfTicketController = TextEditingController();
+  bool ticketIsActivated = false;
+
+  late Future<GetServicesModel?> _futureData; // متغیر Future برای FutureBuilder
+  final ServicesApiServer _apiServer = ServicesApiServer(); // نمونه کلاس API
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchData(); // مقداردهی اولیه
+  }
+
+  // متد برای مقداردهی Future
+  void _fetchData() {
+    setState(() {
+      _futureData = _apiServer.getServicesFromServer(); // فراخوانی درخواست GET
+    });
+  }
+
+  // متد ارسال داده به سرور و دریافت مجدد داده‌ها
+  Future<void> _postDataToServer(Map<String, dynamic> requestData) async {
+    loadingDialog();
+
+    try {
+      var response = await _apiServer.createServicesToServer(requestData);
+      if (response == true) {
+        // در صورت موفقیت، داده‌ها را مجدد دریافت کنید
+        _fetchData();
+      } else {
+        print("POST request failed.");
+      }
+    } catch (e) {
+      print("Error posting data: $e");
+    } finally {
+      // بستن دیالوگ لودینگ
+      if (mounted) Navigator.of(context).pop();
+    }
+  }
+
+  // متد ارسال داده به سرور و دریافت مجدد داده‌ها
+  Future<void> _deleteDataToServer(String documentId) async {
+    loadingDialog();
+
+    try {
+      var response = await _apiServer.deleteServicesToServer(documentId);
+      if (response == true) {
+        // در صورت موفقیت، داده‌ها را مجدد دریافت کنید
+        _fetchData();
+      } else {
+        print("POST request failed.");
+      }
+    } catch (e) {
+      print("Error posting data: $e");
+    } finally {
+      // بستن دیالوگ لودینگ
+      if (mounted) Navigator.of(context).pop();
+    }
+  }
+
+  // متد ارسال داده به سرور و دریافت مجدد داده‌ها
+  Future<void> _updateDataToServer(
+      String documentId, Map<String, dynamic> requestDataUpdate) async {
+    loadingDialog();
+
+    try {
+      var response = await _apiServer.updateServicesToServer(
+          documentId, requestDataUpdate);
+      if (response == true) {
+        // در صورت موفقیت، داده‌ها را مجدد دریافت کنید
+        _fetchData();
+      } else {
+        print("POST request failed.");
+      }
+    } catch (e) {
+      print("Error posting data: $e");
+    } finally {
+      // بستن دیالوگ لودینگ
+      if (mounted) Navigator.of(context).pop();
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          children: [
-            const Row(
-              children: [
-                Text(
-                  'خدمات',
-                  style: TextStyle(
-                      color: Colors.black, fontFamily: "bold", fontSize: 30.0),
-                ),
-              ],
-            ),
-            const SizedBox(
-              height: 24.0,
-            ),
-            Expanded(
-                child: ListView.builder(
-                    itemCount: items.length,
-                    itemBuilder: (BuildContext context, int index) {
-                      var item = items[index];
-                      return Container(
-                          margin: const EdgeInsets.only(top: 8.0, bottom: 8.0),
-                          padding: const EdgeInsets.all(16.0),
-                          decoration: BoxDecoration(
-                              color: (index % 2 == 0)
-                                  ? Colors.grey
-                                  : Colors.black26,
-                              borderRadius: BorderRadius.circular(12.0)),
-                          child: Row(
-                            children: [
-                              Expanded(
-                                child: Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
-                                  children: [
-                                    SizedBox(
-                                      height: 36.0,
-                                      width: 36.0,
-                                      child: Center(
-                                        child: Text(
-                                          (index + 1).toString(),
-                                          style: const TextStyle(
-                                              color: Colors.black,
-                                              fontFamily: "bold",
-                                              fontSize: 24.0),
-                                        ),
-                                      ),
-                                    ),
-                                    Text(
-                                      item.name,
-                                      style: const TextStyle(
-                                          color: Colors.black,
-                                          fontFamily: "regular",
-                                          fontSize: 20.0),
-                                    ),
-                                    Text(
-                                      '${item.price} تومان',
-                                      style: const TextStyle(
-                                          color: Colors.black,
-                                          fontFamily: "regular",
-                                          fontSize: 20.0),
-                                    ),
-                                    Text(
-                                      item.turn,
-                                      style: const TextStyle(
-                                          color: Colors.black,
-                                          fontFamily: "regular",
-                                          fontSize: 20.0),
-                                    ),
-                                    InkWell(
-                                      onTap: () {
-                                        setState(() {
-                                          item.isActivated = !item.isActivated;
-                                        });
-                                      },
-                                      child: Container(
-                                        height: 42.0,
-                                        width: 110.0,
-                                        decoration: BoxDecoration(
-                                            borderRadius:
-                                                BorderRadius.circular(12.0),
-                                            color: (item.isActivated == true)
-                                                ? Colors.red
-                                                : Colors.green),
-                                        child: Center(
-                                          child: Text(
-                                              (item.isActivated == true)
-                                                  ? 'غیرفعال سازی'
-                                                  : 'فعال سازی',
-                                              style: const TextStyle(
-                                                  color: Colors.black,
-                                                  fontFamily: "medium",
-                                                  fontSize: 14.0)),
-                                        ),
-                                      ),
-                                    )
-                                  ],
-                                ),
-                              ),
-                              const SizedBox(
-                                width: 12.0,
-                              ),
-                              PopupMenuButton<String>(
-                                onSelected: (value) {},
-                                itemBuilder: (BuildContext context) {
-                                  return [
-                                    const PopupMenuItem(
-                                      value: "Option 1",
-                                      child: Align(
-                                        alignment: Alignment.centerRight,
-                                        child: Text("ویرایش",
-                                            style: TextStyle(
-                                                color: Colors.black,
-                                                fontFamily: "medium",
-                                                fontSize: 14.0)),
-                                      ),
-                                    ),
-                                    const PopupMenuItem(
-                                      value: "Option 2",
-                                      child: Align(
-                                          alignment: Alignment.centerRight,
-                                          child: Text("حذف",
-                                              style: TextStyle(
-                                                  color: Colors.black,
-                                                  fontFamily: "medium",
-                                                  fontSize: 14.0))),
-                                    ),
-                                  ];
-                                },
-                                icon:
-                                    const Icon(Icons.more_vert), // آیکن سه‌نقطه
-                              ),
-                            ],
-                          ));
-                    })),
-            const SizedBox(
-              height: 36.0,
-            ),
-          ],
-        ),
-      ),
-      floatingActionButton: FloatingActionButton.extended(
-        onPressed: () {
-          showDialog(
-            context: context,
-            builder: (BuildContext context) {
-              return Directionality(
-                textDirection: TextDirection.rtl,
-                child: AlertDialog(
-                  title: const Row(
-                    children: [
-                      Text('ایجاد یک خدمت', style: TextStyle(fontSize: 16.0, fontFamily: "bold", color: Colors.black))
-                    ],
-                  ),
-                  content: SingleChildScrollView(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
+      body: FutureBuilder<GetServicesModel?>(
+        future: _futureData,
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(
+              child: CircularProgressIndicator(),
+            );
+          } else if (snapshot.hasError) {
+            return Center(
+              child: Text('Error: ${snapshot.error}'),
+            );
+          } else if (snapshot.hasData && snapshot.data != null) {
+            final items = snapshot.data!.data;
+            return Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Column(
+                  children: [
+                    const Row(
                       children: [
-                        Container(
-                          height: 56.0,
-                          width: MediaQuery.of(context).size.width * 0.5,
-                          decoration: BoxDecoration(
-                            color: Color(0xFFD9D9D9),
-                            borderRadius: BorderRadius.circular(12.0)
-                          ),
-                          child: TextField(
-                            decoration: InputDecoration(
-                                hintText: 'نام خدمت را وارد کنید',
-                                hintStyle: TextStyle(fontSize: 14.0, fontFamily: "regular", color: Colors.grey),
-                                border: InputBorder.none,
-                              contentPadding: EdgeInsets.symmetric(horizontal: 12.0, vertical: 0.0)
-                            ),
-                          ),
-                        ),
-                        SizedBox(height: 16),
-                        Container(
-                          height: 156.0,
-                          width: MediaQuery.of(context).size.width * 0.5,
-                          decoration: BoxDecoration(
-                              color: Color(0xFFD9D9D9),
-                              borderRadius: BorderRadius.circular(12.0)
-                          ),
-                          child: TextField(
-                            maxLines: 5,
-                            decoration: InputDecoration(
-                                hintText: 'توضیحات خدمت را وارد کنید',
-                                hintStyle: TextStyle(fontSize: 14.0, fontFamily: "regular", color: Colors.grey),
-                                border: InputBorder.none,
-                                contentPadding: EdgeInsets.symmetric(horizontal: 12.0, vertical: 16.0)
-                            ),
-                          ),
-                        ),
-                        SizedBox(height: 16),
-                        Container(
-                          height: 56.0,
-                          width: MediaQuery.of(context).size.width * 0.5,
-                          decoration: BoxDecoration(
-                              color: Color(0xFFD9D9D9),
-                              borderRadius: BorderRadius.circular(12.0)
-                          ),
-                          child: Padding(
-                            padding: const EdgeInsets.only(left: 12.0, right: 12.0),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Text('انتخاب تصویر', style: TextStyle(fontSize: 14.0, fontFamily: "regular", color: Colors.black),),
-                                IconButton(icon: Icon(Icons.attach_file),onPressed: (){},),
-                              ],
-                            ),
-                          )
-                        ),
-                        SizedBox(height: 16),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Container(
-                                height: 56.0,
-                                width: MediaQuery.of(context).size.width * 0.24,
-                                decoration: BoxDecoration(
-                                    color: Color(0xFFD9D9D9),
-                                    borderRadius: BorderRadius.circular(12.0)
-                                ),
-                                child: Padding(
-                                  padding: const EdgeInsets.only(left: 12.0, right: 12.0),
-                                  child: TextField(
-                                    decoration: InputDecoration(
-                                        hintText: 'هزینه هر بلیط',
-                                        hintStyle: TextStyle(fontSize: 14.0, fontFamily: "regular", color: Colors.grey),
-                                        border: InputBorder.none,
-                                        contentPadding: EdgeInsets.symmetric(horizontal: 12.0, vertical: 16.0)
-                                    ),
-                                  ),
-                                )
-                            ),
-                            Container(
-                                height: 56.0,
-                                width: MediaQuery.of(context).size.width * 0.24,
-                                decoration: BoxDecoration(
-                                    color: Color(0xFFD9D9D9),
-                                    borderRadius: BorderRadius.circular(12.0)
-                                ),
-                                child: Padding(
-                                  padding: const EdgeInsets.only(left: 12.0, right: 12.0),
-                                  child: Row(
-                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                    children: [
-                                      Text('فعال برای همه', style: TextStyle(fontSize: 14.0, fontFamily: "regular", color: Colors.black),),
-                                      Switch(
-                                        value: true, // وضعیت سوئیچ
-                                        activeColor: Color(0xFF628DFF),
-                                        onChanged: (bool value) {
-                                          // تغییر وضعیت سوئیچ
-                                        },
-                                      ),
-
-                                    ],
-                                  ),
-                                )
-                            ),
-                          ],
+                        Text(
+                          'خدمات',
+                          style: TextStyle(
+                              color: Colors.black,
+                              fontFamily: "bold",
+                              fontSize: 30.0),
                         ),
                       ],
                     ),
-                  ),
-                  actions: [
-                    ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Color(0xFF628DFF),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(4.0)
-                        )
-                      ),
-                      onPressed: () {
-                        // عملکرد ارسال اطلاعات
-                      },
-                      child: Text('ایجاد خدمت',  style: TextStyle(fontSize: 14.0, fontFamily: "regular", color: Colors.white)),
+                    const SizedBox(
+                      height: 24.0,
                     ),
-                    TextButton(
-                      style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.white,
-                          shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(4.0),
-                            side: BorderSide(color: Color(0xFF628DFF), width: 1.0)
-                          )
-                      ),
-                      onPressed: () {
-                        Navigator.of(context).pop();
-                      },
-                      child: Text('لغو', style: TextStyle(fontSize: 14.0, fontFamily: "regular", color: Color(0xFF628DFF))),
-                    ),
+                    Expanded(
+                      child: (items.isEmpty)
+                          ? Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Image.asset(
+                                  'assets/images/png/notFound.png',
+                                  height: 200.0,
+                                  width: 200.0,
+                                ),
+                                const SizedBox(
+                                  height: 36.0,
+                                ),
+                                const SizedBox(
+                                  width: 300.0,
+                                  child: Text(
+                                    'خدمتی ایجاد نشده است ، لطفا با استفاده از دکمه ایجاد خدمت ، یک خدمت جدید ایجاد کنید.',
+                                    maxLines: 2,
+                                    textAlign: TextAlign.center,
+                                    style: TextStyle(
+                                        color: Colors.black,
+                                        fontFamily: "bold",
+                                        fontSize: 14.0),
+                                  ),
+                                )
+                              ],
+                            )
+                          : ListView.builder(
+                              itemCount: items.length,
+                              itemBuilder: (BuildContext context, int index) {
+                                final item = items[index];
+                                return Container(
+                                    margin: const EdgeInsets.only(
+                                        top: 8.0, bottom: 8.0),
+                                    padding: const EdgeInsets.all(16.0),
+                                    decoration: BoxDecoration(
+                                      color: (index % 2 == 0)
+                                          ? const Color(0xFFBBBBBB)
+                                          : const Color(0xFFD9D9D9),
+                                      borderRadius: BorderRadius.circular(12.0),
+                                    ),
+                                    child: Row(
+                                      children: [
+                                        SizedBox(
+                                          height: 36.0,
+                                          width: 36.0,
+                                          child: Center(
+                                            child: Text(
+                                              (index + 1).toString(),
+                                              style: const TextStyle(
+                                                  color: Colors.black,
+                                                  fontFamily: "bold",
+                                                  fontSize: 24.0),
+                                            ),
+                                          ),
+                                        ),
+                                        const SizedBox(
+                                          width: 24.0,
+                                        ),
+                                        Expanded(
+                                            child: Row(
+                                          children: [
+                                            Expanded(
+                                              flex: 1,
+                                              child: Column(
+                                                children: [
+                                                  Row(
+                                                    children: [
+                                                      const Text(
+                                                        'نام خدمت : ',
+                                                        style: TextStyle(
+                                                            color: Colors.black,
+                                                            fontFamily: "bold",
+                                                            fontSize: 16.0),
+                                                      ),
+                                                      const SizedBox(
+                                                        width: 4.0,
+                                                      ),
+                                                      Text(
+                                                        item.name,
+                                                        style: const TextStyle(
+                                                            color: Colors.black,
+                                                            fontFamily:
+                                                                "regular",
+                                                            fontSize: 16.0),
+                                                      ),
+                                                    ],
+                                                  ),
+                                                  const SizedBox(
+                                                    height: 24.0,
+                                                  ),
+                                                  Row(
+                                                    children: [
+                                                      const Text(
+                                                        'توضیحات : ',
+                                                        style: TextStyle(
+                                                            color: Colors.black,
+                                                            fontFamily: "bold",
+                                                            fontSize: 16.0),
+                                                      ),
+                                                      const SizedBox(
+                                                        width: 4.0,
+                                                      ),
+                                                      Flexible(
+                                                        // اضافه کردن Flexible برای کنترل فضای متغیر
+                                                        child: Text(
+                                                          item.description,
+                                                          maxLines: 2,
+                                                          // محدود کردن به دو خط
+                                                          overflow: TextOverflow
+                                                              .ellipsis,
+                                                          // نشان دادن ... در صورت بلند بودن متن
+                                                          style:
+                                                              const TextStyle(
+                                                                  color: Colors
+                                                                      .black,
+                                                                  fontFamily:
+                                                                      "regular",
+                                                                  fontSize:
+                                                                      16.0),
+                                                        ),
+                                                      ),
+                                                    ],
+                                                  ),
+                                                ],
+                                              ),
+                                            ),
+                                            const SizedBox(
+                                              width: 24.30,
+                                            ),
+                                            Expanded(
+                                              flex: 1,
+                                              child: Column(
+                                                children: [
+                                                  Row(
+                                                    children: [
+                                                      const Text(
+                                                        'هزینه خدمت : ',
+                                                        style: TextStyle(
+                                                            color: Colors.black,
+                                                            fontFamily: "bold",
+                                                            fontSize: 16.0),
+                                                      ),
+                                                      const SizedBox(
+                                                        width: 4.0,
+                                                      ),
+                                                      Text(
+                                                        formatNumberManually(
+                                                            item.price),
+                                                        style: const TextStyle(
+                                                            color: Colors.black,
+                                                            fontFamily:
+                                                                "regular",
+                                                            fontSize: 16.0),
+                                                      ),
+                                                      const SizedBox(
+                                                        width: 4.0,
+                                                      ),
+                                                      const Text(
+                                                        'تومان',
+                                                        style: TextStyle(
+                                                            color: Colors.black,
+                                                            fontFamily:
+                                                                "regular",
+                                                            fontSize: 16.0),
+                                                      ),
+                                                    ],
+                                                  ),
+                                                  const SizedBox(
+                                                    height: 24.0,
+                                                  ),
+                                                  Row(
+                                                    children: [
+                                                      const Text(
+                                                        'تعداد خدمت : ',
+                                                        style: TextStyle(
+                                                            color: Colors.black,
+                                                            fontFamily: "bold",
+                                                            fontSize: 16.0),
+                                                      ),
+                                                      const SizedBox(
+                                                        width: 4.0,
+                                                      ),
+                                                      Text(
+                                                        item.count.toString(),
+                                                        style: const TextStyle(
+                                                            color: Colors.black,
+                                                            fontFamily:
+                                                                "regular",
+                                                            fontSize: 16.0),
+                                                      ),
+                                                    ],
+                                                  ),
+                                                ],
+                                              ),
+                                            ),
+                                          ],
+                                        )),
+                                        const SizedBox(
+                                          width: 24.0,
+                                        ),
+                                        InkWell(
+                                          onTap: () {},
+                                          child: Container(
+                                            height: 42.0,
+                                            width: 110.0,
+                                            decoration: BoxDecoration(
+                                                borderRadius:
+                                                    BorderRadius.circular(12.0),
+                                                color: (item.isActive ==
+                                                            false ||
+                                                        item.isActive == null)
+                                                    ? Colors.red
+                                                    : Colors.green),
+                                            child: Center(
+                                              child: Text(
+                                                  (item.isActive == false ||
+                                                          item.isActive == null)
+                                                      ? 'غیر فعال'
+                                                      : 'فعال',
+                                                  style: const TextStyle(
+                                                      color: Colors.black,
+                                                      fontFamily: "medium",
+                                                      fontSize: 14.0)),
+                                            ),
+                                          ),
+                                        ),
+                                        const SizedBox(
+                                          width: 24.0,
+                                        ),
+                                        PopupMenuButton<String>(
+                                          onSelected: (value) {
+                                            if (value == 'edit') {
+                                              setState(() {
+                                                nameController.text = item.name;
+                                                describeController.text =
+                                                    item.description;
+                                                costOfTicketController.text =
+                                                    item.price;
+                                                numberOfTicketController.text =
+                                                    item.count.toString();
+                                                ticketIsActivated =
+                                                    item.isActive!;
+                                              });
+                                              addEditItemsDialog(
+                                                  item.documentId);
+                                            } else if (value == 'delete') {
+                                              _deleteDataToServer(
+                                                  item.documentId);
+                                            }
+                                          },
+                                          itemBuilder: (BuildContext context) {
+                                            return [
+                                              const PopupMenuItem(
+                                                value: "edit",
+                                                child: Align(
+                                                  alignment:
+                                                      Alignment.centerRight,
+                                                  child: Text("ویرایش",
+                                                      style: TextStyle(
+                                                          color: Colors.black,
+                                                          fontFamily: "medium",
+                                                          fontSize: 14.0)),
+                                                ),
+                                              ),
+                                              const PopupMenuItem(
+                                                value: "delete",
+                                                child: Align(
+                                                    alignment:
+                                                        Alignment.centerRight,
+                                                    child: Text("حذف",
+                                                        style: TextStyle(
+                                                            color: Colors.black,
+                                                            fontFamily:
+                                                                "medium",
+                                                            fontSize: 14.0))),
+                                              ),
+                                            ];
+                                          },
+                                          icon: const Icon(
+                                              Icons.more_vert), // آیکن سه‌نقطه
+                                        ),
+                                      ],
+                                    ));
+                              },
+                            ),
+                    )
                   ],
-                ),
-              );
-            },
-          );
+                ));
+          } else {
+            return const Center(
+              child: Text('No data available'),
+            );
+          }
+        },
+      ),
+      floatingActionButton: FloatingActionButton.extended(
+        onPressed: () {
+          setState(() {
+            nameController.clear();
+            describeController.clear();
+            costOfTicketController.clear();
+            numberOfTicketController.clear();
+            ticketIsActivated = false;
+          });
+
+          addEditItemsDialog('');
         },
         label: const Text(
           'ایجاد خدمت',
           style: TextStyle(
-              color: Color(0xFFFFFFFF), fontFamily: "bold", fontSize: 20.0),
+              color: Color(0xFFFFFFFF), fontFamily: "bold", fontSize: 16.0),
         ),
         backgroundColor: const Color(0xFF628DFF),
       ),
     );
   }
-}
 
-class ServiceItem {
-  String name;
-  String price;
-  String turn;
-  bool isActivated;
+  String formatNumberManually(String number) {
+    // حذف ویرگول‌های قبلی (در صورت وجود)
+    number = number.replaceAll(',', '');
+    // تبدیل رشته به لیستی از کاراکترها
+    List<String> characters = number.split('');
+    // لیستی برای نگهداری نتیجه
+    List<String> formattedCharacters = [];
+    // اضافه کردن ویرگول هر سه کاراکتر
+    for (int i = 0; i < characters.length; i++) {
+      formattedCharacters.add(characters[characters.length - i - 1]);
+      if ((i + 1) % 3 == 0 && i != characters.length - 1) {
+        formattedCharacters.add(',');
+      }
+    }
+    // معکوس کردن لیست برای برگرداندن ترتیب اصلی
+    return formattedCharacters.reversed.join('');
+  }
 
-  ServiceItem(
-      {required this.name,
-      required this.price,
-      required this.isActivated,
-      required this.turn});
+  loadingDialog() {
+    showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (context) => AlertDialog(
+              backgroundColor: Colors.black,
+              content: Container(
+                height: 120.0,
+                child: const Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      CircularProgressIndicator(
+                        color: Colors.white,
+                      ),
+                      SizedBox(
+                        height: 24.0,
+                      ),
+                      Text('در حال دریافت اطلاعات',
+                          style: TextStyle(
+                              color: Colors.white,
+                              fontFamily: "bold",
+                              fontSize: 16.0))
+                    ],
+                  ),
+                ),
+              ),
+            ));
+  }
+
+  addEditItemsDialog(String documentId) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return StatefulBuilder(builder: (context, setState) {
+          return Directionality(
+            textDirection: TextDirection.rtl,
+            child: AlertDialog(
+              title: const Row(
+                children: [
+                  Text('ایجاد یک خدمت',
+                      style: TextStyle(
+                          fontSize: 16.0,
+                          fontFamily: "bold",
+                          color: Colors.black))
+                ],
+              ),
+              content: SingleChildScrollView(
+                child: Form(
+                  key: _formKey,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      TextFormField(
+                        controller: nameController,
+                        keyboardType: TextInputType.text,
+                        decoration: InputDecoration(
+                          filled: true,
+                          fillColor: const Color(0xFFD9D9D9),
+                          // رنگ پس‌زمینه
+                          hintText: 'نام خدمت را وارد کنید',
+                          hintStyle: const TextStyle(
+                              fontSize: 14.0,
+                              fontFamily: "regular",
+                              color: Colors.grey),
+                          border: InputBorder.none,
+                          // بدون حاشیه
+                          enabledBorder: OutlineInputBorder(
+                            borderSide: BorderSide.none,
+                            // بدون حاشیه در حالت عادی
+                            borderRadius: BorderRadius.circular(12.0),
+                          ),
+                          focusedBorder: OutlineInputBorder(
+                            borderSide: const BorderSide(
+                                color: Colors.grey), // حاشیه هنگام فوکوس
+                            borderRadius: BorderRadius.circular(12.0),
+                          ),
+                          errorBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(12.0),
+                            borderSide: const BorderSide(
+                                color: Colors.red), // حاشیه قرمز در خطا
+                          ),
+                          focusedErrorBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(12.0),
+                            borderSide: const BorderSide(
+                                color: Colors
+                                    .red), // حاشیه قرمز در خطا هنگام فوکوس
+                          ),
+                          errorStyle: const TextStyle(
+                              fontSize: 12.0,
+                              fontFamily: "regular",
+                              color: Colors.red),
+                          contentPadding: const EdgeInsets.symmetric(
+                              horizontal: 12.0, vertical: 16.0),
+                        ),
+                        style: const TextStyle(
+                            fontSize: 14.0,
+                            fontFamily: "regular",
+                            color: Colors.black),
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return 'نام خدمت نباید خالی باشد';
+                          }
+                          return null;
+                        },
+                      ),
+                      const SizedBox(height: 16),
+                      TextFormField(
+                        controller: describeController,
+                        keyboardType: TextInputType.text,
+                        maxLines: 5,
+                        decoration: InputDecoration(
+                          filled: true,
+                          fillColor: const Color(0xFFD9D9D9),
+                          // رنگ پس‌زمینه
+                          hintText: 'توضیحات خدمت را وارد کنید',
+                          hintStyle: const TextStyle(
+                              fontSize: 14.0,
+                              fontFamily: "regular",
+                              color: Colors.grey),
+                          border: InputBorder.none,
+                          // بدون حاشیه
+                          enabledBorder: OutlineInputBorder(
+                            borderSide: BorderSide.none,
+                            // بدون حاشیه در حالت عادی
+                            borderRadius: BorderRadius.circular(12.0),
+                          ),
+                          focusedBorder: OutlineInputBorder(
+                            borderSide: const BorderSide(
+                                color: Colors.grey), // حاشیه هنگام فوکوس
+                            borderRadius: BorderRadius.circular(12.0),
+                          ),
+                          errorBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(12.0),
+                            borderSide: const BorderSide(
+                                color: Colors.red), // حاشیه قرمز در خطا
+                          ),
+                          focusedErrorBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(12.0),
+                            borderSide: const BorderSide(
+                                color: Colors
+                                    .red), // حاشیه قرمز در خطا هنگام فوکوس
+                          ),
+                          errorStyle: const TextStyle(
+                              fontSize: 12.0,
+                              fontFamily: "regular",
+                              color: Colors.red),
+                          contentPadding: const EdgeInsets.symmetric(
+                              horizontal: 12.0, vertical: 16.0),
+                        ),
+                        style: const TextStyle(
+                            fontSize: 14.0,
+                            fontFamily: "regular",
+                            color: Colors.black),
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return 'توضیحات خدمت نباید خالی باشد';
+                          }
+                          return null;
+                        },
+                      ),
+                      const SizedBox(height: 16),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Container(
+                              height: 48.0,
+                              width: MediaQuery.of(context).size.width * 0.24,
+                              decoration: BoxDecoration(
+                                  color: const Color(0xFFD9D9D9),
+                                  borderRadius: BorderRadius.circular(12.0)),
+                              child: Padding(
+                                padding: const EdgeInsets.only(
+                                    left: 12.0, right: 12.0),
+                                child: Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    const Text(
+                                      'انتخاب تصویر',
+                                      style: TextStyle(
+                                          fontSize: 14.0,
+                                          fontFamily: "regular",
+                                          color: Colors.black),
+                                    ),
+                                    IconButton(
+                                      icon: const Icon(Icons.attach_file),
+                                      onPressed: () {},
+                                    ),
+                                  ],
+                                ),
+                              )),
+                          const SizedBox(
+                            width: 24.0,
+                          ),
+                          SizedBox(
+                            width: MediaQuery.of(context).size.width * 0.24,
+                            child: TextFormField(
+                              controller: costOfTicketController,
+                              keyboardType: TextInputType.number,
+                              inputFormatters: [
+                                FilteringTextInputFormatter.digitsOnly
+                              ],
+                              decoration: InputDecoration(
+                                filled: true,
+                                fillColor: const Color(0xFFD9D9D9),
+                                // رنگ پس‌زمینه
+                                hintText: 'هزینه هر بلیط',
+                                hintStyle: const TextStyle(
+                                    fontSize: 14.0,
+                                    fontFamily: "regular",
+                                    color: Colors.grey),
+                                border: InputBorder.none,
+                                // بدون حاشیه
+                                enabledBorder: OutlineInputBorder(
+                                  borderSide: BorderSide.none,
+                                  // بدون حاشیه در حالت عادی
+                                  borderRadius: BorderRadius.circular(12.0),
+                                ),
+                                focusedBorder: OutlineInputBorder(
+                                  borderSide:
+                                      const BorderSide(color: Colors.grey),
+                                  // حاشیه هنگام فوکوس
+                                  borderRadius: BorderRadius.circular(12.0),
+                                ),
+                                errorBorder: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(12.0),
+                                  borderSide: const BorderSide(
+                                      color: Colors.red), // حاشیه قرمز در خطا
+                                ),
+                                focusedErrorBorder: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(12.0),
+                                  borderSide: const BorderSide(
+                                      color: Colors
+                                          .red), // حاشیه قرمز در خطا هنگام فوکوس
+                                ),
+                                errorStyle: const TextStyle(
+                                    fontSize: 12.0,
+                                    fontFamily: "regular",
+                                    color: Colors.red),
+                                contentPadding: const EdgeInsets.symmetric(
+                                    horizontal: 12.0, vertical: 16.0),
+                              ),
+                              style: const TextStyle(
+                                  fontSize: 14.0,
+                                  fontFamily: "regular",
+                                  color: Colors.black),
+                              validator: (value) {
+                                if (value == null || value.isEmpty) {
+                                  return 'هزینه هر بلیط نباید خالی باشد';
+                                }
+                                return null;
+                              },
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 16),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          SizedBox(
+                            width: MediaQuery.of(context).size.width * 0.24,
+                            child: TextFormField(
+                              controller: numberOfTicketController,
+                              keyboardType: TextInputType.number,
+                              inputFormatters: [
+                                FilteringTextInputFormatter.digitsOnly
+                              ],
+                              // محدود کردن به اعداد
+                              decoration: InputDecoration(
+                                filled: true,
+                                fillColor: const Color(0xFFD9D9D9),
+                                // رنگ پس‌زمینه
+                                hintText: 'تعداد بلیط',
+                                hintStyle: const TextStyle(
+                                    fontSize: 14.0,
+                                    fontFamily: "regular",
+                                    color: Colors.grey),
+                                border: InputBorder.none,
+                                // بدون حاشیه
+                                enabledBorder: OutlineInputBorder(
+                                  borderSide: BorderSide.none,
+                                  // بدون حاشیه در حالت عادی
+                                  borderRadius: BorderRadius.circular(12.0),
+                                ),
+                                focusedBorder: OutlineInputBorder(
+                                  borderSide:
+                                      const BorderSide(color: Colors.grey),
+                                  // حاشیه هنگام فوکوس
+                                  borderRadius: BorderRadius.circular(12.0),
+                                ),
+                                errorBorder: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(12.0),
+                                  borderSide: const BorderSide(
+                                      color: Colors.red), // حاشیه قرمز در خطا
+                                ),
+                                focusedErrorBorder: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(12.0),
+                                  borderSide: const BorderSide(
+                                      color: Colors
+                                          .red), // حاشیه قرمز در خطا هنگام فوکوس
+                                ),
+                                errorStyle: const TextStyle(
+                                    fontSize: 12.0,
+                                    fontFamily: "regular",
+                                    color: Colors.red),
+                                contentPadding: const EdgeInsets.symmetric(
+                                    horizontal: 12.0, vertical: 16.0),
+                              ),
+                              style: const TextStyle(
+                                  fontSize: 14.0,
+                                  fontFamily: "regular",
+                                  color: Colors.black),
+                              validator: (value) {
+                                if (value == null || value.isEmpty) {
+                                  return 'تعداد بلیط نباید خالی باشد';
+                                }
+                                return null;
+                              },
+                            ),
+                          ),
+                          const SizedBox(
+                            width: 24.0,
+                          ),
+                          Container(
+                              height: 48.0,
+                              width: MediaQuery.of(context).size.width * 0.24,
+                              decoration: BoxDecoration(
+                                  color: const Color(0xFFD9D9D9),
+                                  borderRadius: BorderRadius.circular(12.0)),
+                              child: Padding(
+                                padding: const EdgeInsets.only(
+                                    left: 12.0, right: 12.0),
+                                child: Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    const Text(
+                                      'فعال برای همه',
+                                      style: TextStyle(
+                                          fontSize: 14.0,
+                                          fontFamily: "regular",
+                                          color: Colors.black),
+                                    ),
+                                    Switch(
+                                      value: ticketIsActivated,
+                                      // وضعیت سوئیچ
+                                      activeColor: const Color(0xFF628DFF),
+                                      onChanged: (bool value) {
+                                        setState(() {
+                                          ticketIsActivated =
+                                              !ticketIsActivated;
+                                        });
+                                        // تغییر وضعیت سوئیچ
+                                      },
+                                    ),
+                                  ],
+                                ),
+                              )),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              actions: [
+                ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                      backgroundColor: const Color(0xFF628DFF),
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(4.0))),
+                  onPressed: () {
+                    // عملکرد ارسال اطلاعات
+                    // _postDataToServer();
+                    if (documentId == '') {
+                      if (_formKey.currentState!.validate()) {
+                        // اگر اعتبارسنجی موفق بود
+
+                        String numberOfTicketText =
+                            numberOfTicketController.text;
+                        int ticketCount = 0;
+
+                        if (numberOfTicketText.isNotEmpty &&
+                            int.tryParse(numberOfTicketText) != null) {
+                          ticketCount = int.parse(numberOfTicketText);
+                        } else {
+                          ticketCount = 0;
+                        }
+
+                        Map<String, dynamic> requestData = {
+                          "data": {
+                            "name": nameController.text,
+                            "description": describeController.text,
+                            "price": costOfTicketController.text,
+                            "count": ticketCount,
+                            "isactive": ticketIsActivated,
+                            "pic": null
+                          }
+                        };
+
+                        Navigator.of(context).pop();
+                        _postDataToServer(requestData);
+                      }
+                    } else {
+                      if (_formKey.currentState!.validate()) {
+                        // اگر اعتبارسنجی موفق بود
+
+                        String numberOfTicketText =
+                            numberOfTicketController.text;
+                        int ticketCount = 0;
+
+                        if (numberOfTicketText.isNotEmpty &&
+                            int.tryParse(numberOfTicketText) != null) {
+                          ticketCount = int.parse(numberOfTicketText);
+                        } else {
+                          ticketCount = 0;
+                        }
+
+                        Map<String, dynamic> requestData = {
+                          "data": {
+                            "name": nameController.text,
+                            "description": describeController.text,
+                            "price": costOfTicketController.text,
+                            "count": ticketCount,
+                            "isactive": ticketIsActivated,
+                            "pic": null
+                          }
+                        };
+
+                        Navigator.of(context).pop();
+                        _updateDataToServer(documentId, requestData);
+                      }
+                    }
+                  },
+                  child: const Text('ایجاد خدمت',
+                      style: TextStyle(
+                          fontSize: 14.0,
+                          fontFamily: "regular",
+                          color: Colors.white)),
+                ),
+                TextButton(
+                  style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.white,
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(4.0),
+                          side: const BorderSide(
+                              color: Color(0xFF628DFF), width: 1.0))),
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                  child: const Text('لغو',
+                      style: TextStyle(
+                          fontSize: 14.0,
+                          fontFamily: "regular",
+                          color: Color(0xFF628DFF))),
+                ),
+              ],
+            ),
+          );
+        });
+      },
+    );
+  }
 }
