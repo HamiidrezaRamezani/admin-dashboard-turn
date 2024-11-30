@@ -6,6 +6,8 @@ import 'package:turn_rating_launcher/users.dart';
 import 'gallery.dart';
 
 class DashboardScreen extends StatefulWidget {
+  const DashboardScreen({super.key});
+
   @override
   _DashboardScreenState createState() => _DashboardScreenState();
 }
@@ -17,9 +19,9 @@ class _DashboardScreenState extends State<DashboardScreen> {
   // List of pages to show
   final List<Widget> pages = [
     ServicesPage(),
-    Users(),
-    Reports(),
-    Gallery(),
+    const Users(),
+    const Reports(),
+    const Gallery(),
   ];
 
   @override
@@ -33,6 +35,9 @@ class _DashboardScreenState extends State<DashboardScreen> {
             color: Colors.grey[200],
             child: ListView(
               children: [
+                const SizedBox(
+                  height: 24.0,
+                ),
                 MenuItem(
                   title: 'خدمات',
                   icon: Icons.home_repair_service_outlined,
@@ -42,6 +47,9 @@ class _DashboardScreenState extends State<DashboardScreen> {
                       selectedIndex = 0;
                     });
                   },
+                ),
+                const SizedBox(
+                  height: 8.0,
                 ),
                 MenuItem(
                   title: 'کاربران',
@@ -53,6 +61,9 @@ class _DashboardScreenState extends State<DashboardScreen> {
                     });
                   },
                 ),
+                const SizedBox(
+                  height: 8.0,
+                ),
                 MenuItem(
                   title: 'گزارشات',
                   icon: Icons.report,
@@ -62,6 +73,9 @@ class _DashboardScreenState extends State<DashboardScreen> {
                       selectedIndex = 2;
                     });
                   },
+                ),
+                const SizedBox(
+                  height: 8.0,
                 ),
                 MenuItem(
                   title: 'گالری',
@@ -98,6 +112,7 @@ class MenuItem extends StatelessWidget {
   final VoidCallback onTap;
 
   const MenuItem({
+    super.key,
     required this.title,
     required this.icon,
     required this.isSelected,
@@ -111,11 +126,10 @@ class MenuItem extends StatelessWidget {
       title: Text(
         title,
         style: TextStyle(
-          color: isSelected ? Colors.blue : Colors.black,
-          fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
-          fontFamily: "medium",
-          fontSize: 20.0
-        ),
+            color: isSelected ? Colors.blue : Colors.black,
+            fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+            fontFamily: "medium",
+            fontSize: 20.0),
       ),
       onTap: onTap,
     );
