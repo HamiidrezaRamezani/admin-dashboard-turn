@@ -139,7 +139,7 @@ class _UsersState extends State<Users> {
                                                       width: 4.0,
                                                     ),
                                                     Text(
-                                                      item!.username,
+                                                      (item!.name == null)?'ندارد':item.name!,
                                                       style: const TextStyle(
                                                           color: Colors.black,
                                                           fontFamily:
@@ -207,9 +207,8 @@ class _UsersState extends State<Users> {
                                                       width: 4.0,
                                                     ),
                                                     Text(
-                                                      '121212',
-                                                      // formatNumberManually(
-                                                      //     item.price),
+                                                      formatNumberManually(
+                                                          item.totalAmountSpent.toString()),
                                                       style: const TextStyle(
                                                           color: Colors.black,
                                                           fontFamily:
@@ -245,8 +244,69 @@ class _UsersState extends State<Users> {
                                                       width: 4.0,
                                                     ),
                                                     Text(
-                                                      // item.count.toString(),
-                                                      '12',
+                                                      item.totalTickets.toString(),
+                                                      // '12',
+                                                      style: const TextStyle(
+                                                          color: Colors.black,
+                                                          fontFamily:
+                                                          "regular",
+                                                          fontSize: 16.0),
+                                                    ),
+                                                  ],
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                          const SizedBox(
+                                            width: 24.30,
+                                          ),
+                                          Expanded(
+                                            flex: 1,
+                                            child: Column(
+                                              children: [
+                                                Row(
+                                                  children: [
+                                                    const Text(
+                                                      'کد ملی : ',
+                                                      style: TextStyle(
+                                                          color: Colors.black,
+                                                          fontFamily: "bold",
+                                                          fontSize: 16.0),
+                                                    ),
+                                                    const SizedBox(
+                                                      width: 4.0,
+                                                    ),
+                                                    Text(
+                                                      (item.nationalCode == null)?'ندارد':item.nationalCode!,
+                                                      // formatNumberManually(
+                                                      //     item.price),
+                                                      style: const TextStyle(
+                                                          color: Colors.black,
+                                                          fontFamily:
+                                                          "regular",
+                                                          fontSize: 16.0),
+                                                    ),
+                                                  ],
+                                                ),
+                                                const SizedBox(
+                                                  height: 24.0,
+                                                ),
+                                                Row(
+                                                  children: [
+                                                    const Text(
+                                                      'شماره تلفن : ',
+                                                      style: TextStyle(
+                                                          color: Colors.black,
+                                                          fontFamily: "bold",
+                                                          fontSize: 16.0),
+                                                    ),
+                                                    const SizedBox(
+                                                      width: 4.0,
+                                                    ),
+                                                    Text(
+                                                      (item.nationalCode == null)?'ندارد':item.nationalCode!,
+                                                      // formatNumberManually(
+                                                      //     item.price),
                                                       style: const TextStyle(
                                                           color: Colors.black,
                                                           fontFamily:
@@ -342,6 +402,25 @@ class _UsersState extends State<Users> {
             ),
           ),
         ));
+  }
+
+
+  String formatNumberManually(String number) {
+    // حذف ویرگول‌های قبلی (در صورت وجود)
+    number = number.replaceAll(',', '');
+    // تبدیل رشته به لیستی از کاراکترها
+    List<String> characters = number.split('');
+    // لیستی برای نگهداری نتیجه
+    List<String> formattedCharacters = [];
+    // اضافه کردن ویرگول هر سه کاراکتر
+    for (int i = 0; i < characters.length; i++) {
+      formattedCharacters.add(characters[characters.length - i - 1]);
+      if ((i + 1) % 3 == 0 && i != characters.length - 1) {
+        formattedCharacters.add(',');
+      }
+    }
+    // معکوس کردن لیست برای برگرداندن ترتیب اصلی
+    return formattedCharacters.reversed.join('');
   }
 
 }

@@ -8,7 +8,7 @@ class UsersApiServer {
 
   Future<List<GetUserDataModel>?> getUsersFromServer() async {
     try {
-      Response response = await dio.get('/users'); // مسیر درخواست
+      Response response = await dio.get('/user-reports-dashboard'); // مسیر درخواست
       if (response.statusCode == 200) {
         // تبدیل داده‌های پاسخ به لیست مدل
         List<GetUserDataModel> galleryData = (response.data as List)

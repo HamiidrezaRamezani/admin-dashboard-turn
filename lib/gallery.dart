@@ -93,8 +93,6 @@ class _GalleryState extends State<Gallery> {
   }
 
 
-
-
   @override
   Widget build(BuildContext context) {
     return FutureBuilder<List<GetGalleryDataModel?>>(
