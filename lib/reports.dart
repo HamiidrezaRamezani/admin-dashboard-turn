@@ -178,7 +178,7 @@ class _ReportsState extends State<Reports> {
         label: const Text(
           'دریافت فایل Excel',
           style: TextStyle(
-              color: Color(0xFFFFFFFF), fontFamily: "bold", fontSize: 20.0),
+              color: Color(0xFFFFFFFF), fontFamily: "bold", fontSize: 16.0),
         ),
         backgroundColor: const Color(0xFF628DFF),
       ),

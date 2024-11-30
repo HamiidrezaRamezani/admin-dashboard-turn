@@ -3,6 +3,8 @@ import 'package:turn_rating_launcher/reports.dart';
 import 'package:turn_rating_launcher/services_page.dart';
 import 'package:turn_rating_launcher/users.dart';
 
+import 'gallery.dart';
+
 class DashboardScreen extends StatefulWidget {
   @override
   _DashboardScreenState createState() => _DashboardScreenState();
@@ -17,6 +19,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
     ServicesPage(),
     Users(),
     Reports(),
+    Gallery(),
   ];
 
   @override
@@ -57,6 +60,16 @@ class _DashboardScreenState extends State<DashboardScreen> {
                   onTap: () {
                     setState(() {
                       selectedIndex = 2;
+                    });
+                  },
+                ),
+                MenuItem(
+                  title: 'گالری',
+                  icon: Icons.image,
+                  isSelected: selectedIndex == 3,
+                  onTap: () {
+                    setState(() {
+                      selectedIndex = 3;
                     });
                   },
                 ),

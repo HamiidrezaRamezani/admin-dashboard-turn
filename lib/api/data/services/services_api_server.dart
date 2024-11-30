@@ -1,6 +1,6 @@
 import 'package:dio/dio.dart';
 
-import '../../models/get_services_models/get_services_model.dart';
+import '../../models/services_models/get_services_model.dart';
 import '../../utils/dio_config.dart';
 
 class ServicesApiServer {

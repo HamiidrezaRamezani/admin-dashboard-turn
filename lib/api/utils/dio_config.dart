@@ -1,4 +1,5 @@
 import 'package:dio/dio.dart';
+import 'package:turn_rating_launcher/api/utils/config_network.dart';
 
 class DioConfig {
   // Singleton Pattern برای دسترسی یکپارچه به Dio
@@ -12,7 +13,7 @@ class DioConfig {
 
   DioConfig._internal() {
     dio = Dio(BaseOptions(
-      baseUrl: 'https://bqheshm-tickets.liara.run/api', // آدرس پایه API
+      baseUrl: ConfigNetwork.baseUrl, // آدرس پایه API
       connectTimeout: const Duration(seconds: 10), // زمان اتصال
       receiveTimeout: const Duration(seconds: 10), // زمان دریافت
       headers: {

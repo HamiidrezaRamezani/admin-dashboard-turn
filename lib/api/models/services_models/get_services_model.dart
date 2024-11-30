@@ -1,4 +1,4 @@
-import 'package:turn_rating_launcher/api/models/get_services_models/get_services_data_model.dart';
+import 'package:turn_rating_launcher/api/models/services_models/get_services_data_model.dart';
 import '../../common/meta_model.dart';
 
 class GetServicesModel {

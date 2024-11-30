@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:turn_rating_launcher/api/data/services/services_api_server.dart';
-import 'api/models/get_services_models/get_services_model.dart';
+import 'api/models/services_models/get_services_model.dart';
 
 class ServicesPage extends StatefulWidget {
   @override
