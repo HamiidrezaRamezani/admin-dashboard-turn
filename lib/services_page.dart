@@ -166,8 +166,8 @@ class _ServicesPageState extends State<ServicesPage> {
                                     padding: const EdgeInsets.all(16.0),
                                     decoration: BoxDecoration(
                                       color: (index % 2 == 0)
-                                          ? const Color(0xFFBBBBBB)
-                                          : const Color(0xFFD9D9D9),
+                                          ? const Color(0xFF007BFF).withOpacity(0.2)
+                                          : const Color(0xFF007BFF).withOpacity(0.1),
                                       borderRadius: BorderRadius.circular(12.0),
                                     ),
                                     child: Row(

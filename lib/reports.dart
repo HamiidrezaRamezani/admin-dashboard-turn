@@ -70,7 +70,11 @@ class _ReportsState extends State<Reports> {
                           child: Container(
                             height: MediaQuery.of(context).size.height * 0.2,
                             decoration: const BoxDecoration(
-                                color: Color(0xFF628DFF),
+                                // color: Color(0xFF628DFF),
+                              gradient: LinearGradient(colors: [
+                                Color(0xFF007BFF),
+                                Color(0xFF3C9AFF)
+                              ], begin: Alignment.topRight, end: Alignment.bottomLeft),
                                 borderRadius: BorderRadius.all(Radius.circular(12.0))
                             ),
                             child: Padding(padding: EdgeInsets.all(24.0), child: Stack(
@@ -98,7 +102,10 @@ class _ReportsState extends State<Reports> {
                           child: Container(
                             height: MediaQuery.of(context).size.height * 0.2,
                             decoration: const BoxDecoration(
-                                color: Color(0xFF58fcec),
+                                gradient: LinearGradient(colors: [
+                                  Color(0xFF413D99),
+                                  Color(0xFF9996D8)
+                                ], begin: Alignment.topRight, end: Alignment.bottomLeft),
                                 borderRadius: BorderRadius.all(Radius.circular(12.0))
                             ),
                             child: Padding(padding: EdgeInsets.all(24.0), child: Stack(
@@ -126,7 +133,10 @@ class _ReportsState extends State<Reports> {
                           child: Container(
                             height: MediaQuery.of(context).size.height * 0.2,
                             decoration: const BoxDecoration(
-                                color: Color(0xFFFF99C9),
+                                gradient: LinearGradient(colors: [
+                                  Color(0xFFFF6D19),
+                                  Color(0xFFFFA571)
+                                ], begin: Alignment.topRight, end: Alignment.bottomLeft),
                                 borderRadius: BorderRadius.all(Radius.circular(12.0))
                             ),
                             child: Padding(padding: EdgeInsets.all(24.0), child: Stack(
@@ -183,8 +193,8 @@ class _ReportsState extends State<Reports> {
                               padding: const EdgeInsets.all(16.0),
                               decoration: BoxDecoration(
                                 color: (index % 2 == 0)
-                                    ? const Color(0xFFBBBBBB)
-                                    : const Color(0xFFD9D9D9),
+                                    ? const Color(0xFF007BFF).withOpacity(0.2)
+                                    : const Color(0xFF007BFF).withOpacity(0.1),
                                 borderRadius: BorderRadius.circular(12.0),
                               ),
                               child: Row(
