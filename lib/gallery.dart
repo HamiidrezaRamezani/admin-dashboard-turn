@@ -240,6 +240,18 @@ class _GalleryState extends State<Gallery> {
                                           ),
                                         ),
                                       ),
+                                      Positioned.fill(child: Container(
+                                        decoration: BoxDecoration(
+                                          gradient: LinearGradient(colors: [
+                                            Colors.black.withOpacity(0.5),
+                                            Colors.black.withOpacity(0.05)
+                                            ],
+                                            begin: Alignment.bottomCenter,
+                                            end: Alignment.topCenter
+                                          ),
+                                          borderRadius: BorderRadius.circular(8.0)
+                                        ),
+                                      )),
                                       Align(
                                         alignment: Alignment.bottomLeft,
                                         child: Padding(
@@ -268,7 +280,7 @@ class _GalleryState extends State<Gallery> {
                                               ];
                                             },
                                             icon: const Icon(Icons
-                                                .more_vert), // آیکن سه‌نقطه
+                                                .more_vert, color: Colors.white,), // آیکن سه‌نقطه
                                           ),
                                         ),
                                       ),
