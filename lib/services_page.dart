@@ -1,7 +1,12 @@
+import 'package:cached_network_image/cached_network_image.dart';
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:turn_rating_launcher/api/data/services/services_api_server.dart';
+import 'package:turn_rating_launcher/api/utils/config_network.dart';
+import 'api/models/gallery_models/get_gallery_data_model.dart';
 import 'api/models/services_models/get_services_model.dart';
+import 'api/utils/dio_config.dart';
 
 class ServicesPage extends StatefulWidget {
   @override
@@ -11,11 +16,18 @@ class ServicesPage extends StatefulWidget {
 class _ServicesPageState extends State<ServicesPage> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
+  List<ImageItemList> imagesFromGalleryForSelect = [];
+  List<ImageItemList> selectedImages = []; // لیست تصاویر انتخاب‌شده
+
+
+  final Dio dio = DioConfig().dio;
+
   TextEditingController nameController = TextEditingController();
   TextEditingController describeController = TextEditingController();
   TextEditingController numberOfTicketController = TextEditingController();
   TextEditingController costOfTicketController = TextEditingController();
   bool ticketIsActivated = false;
+  bool isImageGetLoading = false;
 
   late Future<GetServicesModel?> _futureData; // متغیر Future برای FutureBuilder
   final ServicesApiServer _apiServer = ServicesApiServer(); // نمونه کلاس API
@@ -23,6 +35,7 @@ class _ServicesPageState extends State<ServicesPage> {
   @override
   void initState() {
     super.initState();
+    getGalleryFromServer();
     _fetchData(); // مقداردهی اولیه
   }
 
@@ -170,247 +183,271 @@ class _ServicesPageState extends State<ServicesPage> {
                                           : const Color(0xFF007BFF).withOpacity(0.1),
                                       borderRadius: BorderRadius.circular(12.0),
                                     ),
-                                    child: Row(
+                                    child: Column(
                                       children: [
-                                        SizedBox(
-                                          height: 36.0,
-                                          width: 36.0,
-                                          child: Center(
-                                            child: Text(
-                                              (index + 1).toString(),
-                                              style: const TextStyle(
-                                                  color: Colors.black,
-                                                  fontFamily: "bold",
-                                                  fontSize: 24.0),
-                                            ),
-                                          ),
-                                        ),
-                                        const SizedBox(
-                                          width: 24.0,
-                                        ),
-                                        Expanded(
-                                            child: Row(
+                                        Row(
                                           children: [
-                                            Expanded(
-                                              flex: 1,
-                                              child: Column(
-                                                children: [
-                                                  Row(
-                                                    children: [
-                                                      const Text(
-                                                        'نام خدمت : ',
-                                                        style: TextStyle(
-                                                            color: Colors.black,
-                                                            fontFamily: "bold",
-                                                            fontSize: 16.0),
-                                                      ),
-                                                      const SizedBox(
-                                                        width: 4.0,
-                                                      ),
-                                                      Text(
-                                                        item.name,
-                                                        style: const TextStyle(
-                                                            color: Colors.black,
-                                                            fontFamily:
-                                                                "regular",
-                                                            fontSize: 16.0),
-                                                      ),
-                                                    ],
-                                                  ),
-                                                  const SizedBox(
-                                                    height: 24.0,
-                                                  ),
-                                                  Row(
-                                                    children: [
-                                                      const Text(
-                                                        'توضیحات : ',
-                                                        style: TextStyle(
-                                                            color: Colors.black,
-                                                            fontFamily: "bold",
-                                                            fontSize: 16.0),
-                                                      ),
-                                                      const SizedBox(
-                                                        width: 4.0,
-                                                      ),
-                                                      Flexible(
-                                                        // اضافه کردن Flexible برای کنترل فضای متغیر
-                                                        child: Text(
-                                                          item.description,
-                                                          maxLines: 2,
-                                                          // محدود کردن به دو خط
-                                                          overflow: TextOverflow
-                                                              .ellipsis,
-                                                          // نشان دادن ... در صورت بلند بودن متن
-                                                          style:
-                                                              const TextStyle(
-                                                                  color: Colors
-                                                                      .black,
-                                                                  fontFamily:
-                                                                      "regular",
-                                                                  fontSize:
-                                                                      16.0),
-                                                        ),
-                                                      ),
-                                                    ],
-                                                  ),
-                                                ],
+                                            SizedBox(
+                                              height: 36.0,
+                                              width: 36.0,
+                                              child: Center(
+                                                child: Text(
+                                                  (index + 1).toString(),
+                                                  style: const TextStyle(
+                                                      color: Colors.black,
+                                                      fontFamily: "bold",
+                                                      fontSize: 24.0),
+                                                ),
                                               ),
                                             ),
                                             const SizedBox(
-                                              width: 24.30,
+                                              width: 24.0,
                                             ),
                                             Expanded(
-                                              flex: 1,
-                                              child: Column(
-                                                children: [
-                                                  Row(
-                                                    children: [
-                                                      const Text(
-                                                        'هزینه خدمت : ',
-                                                        style: TextStyle(
-                                                            color: Colors.black,
-                                                            fontFamily: "bold",
-                                                            fontSize: 16.0),
+                                                child: Row(
+                                                  children: [
+                                                    Expanded(
+                                                      flex: 1,
+                                                      child: Column(
+                                                        children: [
+                                                          Row(
+                                                            children: [
+                                                              const Text(
+                                                                'نام خدمت : ',
+                                                                style: TextStyle(
+                                                                    color: Colors.black,
+                                                                    fontFamily: "bold",
+                                                                    fontSize: 16.0),
+                                                              ),
+                                                              const SizedBox(
+                                                                width: 4.0,
+                                                              ),
+                                                              Text(
+                                                                item.name,
+                                                                style: const TextStyle(
+                                                                    color: Colors.black,
+                                                                    fontFamily:
+                                                                    "regular",
+                                                                    fontSize: 16.0),
+                                                              ),
+                                                            ],
+                                                          ),
+                                                          const SizedBox(
+                                                            height: 24.0,
+                                                          ),
+                                                          Row(
+                                                            children: [
+                                                              const Text(
+                                                                'توضیحات : ',
+                                                                style: TextStyle(
+                                                                    color: Colors.black,
+                                                                    fontFamily: "bold",
+                                                                    fontSize: 16.0),
+                                                              ),
+                                                              const SizedBox(
+                                                                width: 4.0,
+                                                              ),
+                                                              Flexible(
+                                                                // اضافه کردن Flexible برای کنترل فضای متغیر
+                                                                child: Text(
+                                                                  item.description,
+                                                                  maxLines: 2,
+                                                                  // محدود کردن به دو خط
+                                                                  overflow: TextOverflow
+                                                                      .ellipsis,
+                                                                  // نشان دادن ... در صورت بلند بودن متن
+                                                                  style:
+                                                                  const TextStyle(
+                                                                      color: Colors
+                                                                          .black,
+                                                                      fontFamily:
+                                                                      "regular",
+                                                                      fontSize:
+                                                                      16.0),
+                                                                ),
+                                                              ),
+                                                            ],
+                                                          ),
+                                                        ],
                                                       ),
-                                                      const SizedBox(
-                                                        width: 4.0,
+                                                    ),
+                                                    const SizedBox(
+                                                      width: 24.30,
+                                                    ),
+                                                    Expanded(
+                                                      flex: 1,
+                                                      child: Column(
+                                                        children: [
+                                                          Row(
+                                                            children: [
+                                                              const Text(
+                                                                'هزینه خدمت : ',
+                                                                style: TextStyle(
+                                                                    color: Colors.black,
+                                                                    fontFamily: "bold",
+                                                                    fontSize: 16.0),
+                                                              ),
+                                                              const SizedBox(
+                                                                width: 4.0,
+                                                              ),
+                                                              Text(
+                                                                formatNumberManually(
+                                                                    item.price),
+                                                                style: const TextStyle(
+                                                                    color: Colors.black,
+                                                                    fontFamily:
+                                                                    "regular",
+                                                                    fontSize: 16.0),
+                                                              ),
+                                                              const SizedBox(
+                                                                width: 4.0,
+                                                              ),
+                                                              const Text(
+                                                                'تومان',
+                                                                style: TextStyle(
+                                                                    color: Colors.black,
+                                                                    fontFamily:
+                                                                    "regular",
+                                                                    fontSize: 16.0),
+                                                              ),
+                                                            ],
+                                                          ),
+                                                          const SizedBox(
+                                                            height: 24.0,
+                                                          ),
+                                                          Row(
+                                                            children: [
+                                                              const Text(
+                                                                'تعداد خدمت : ',
+                                                                style: TextStyle(
+                                                                    color: Colors.black,
+                                                                    fontFamily: "bold",
+                                                                    fontSize: 16.0),
+                                                              ),
+                                                              const SizedBox(
+                                                                width: 4.0,
+                                                              ),
+                                                              Text(
+                                                                item.count.toString(),
+                                                                style: const TextStyle(
+                                                                    color: Colors.black,
+                                                                    fontFamily:
+                                                                    "regular",
+                                                                    fontSize: 16.0),
+                                                              ),
+                                                            ],
+                                                          ),
+                                                        ],
                                                       ),
-                                                      Text(
-                                                        formatNumberManually(
-                                                            item.price),
-                                                        style: const TextStyle(
-                                                            color: Colors.black,
-                                                            fontFamily:
-                                                                "regular",
-                                                            fontSize: 16.0),
-                                                      ),
-                                                      const SizedBox(
-                                                        width: 4.0,
-                                                      ),
-                                                      const Text(
-                                                        'تومان',
-                                                        style: TextStyle(
-                                                            color: Colors.black,
-                                                            fontFamily:
-                                                                "regular",
-                                                            fontSize: 16.0),
-                                                      ),
-                                                    ],
-                                                  ),
-                                                  const SizedBox(
-                                                    height: 24.0,
-                                                  ),
-                                                  Row(
-                                                    children: [
-                                                      const Text(
-                                                        'تعداد خدمت : ',
-                                                        style: TextStyle(
-                                                            color: Colors.black,
-                                                            fontFamily: "bold",
-                                                            fontSize: 16.0),
-                                                      ),
-                                                      const SizedBox(
-                                                        width: 4.0,
-                                                      ),
-                                                      Text(
-                                                        item.count.toString(),
-                                                        style: const TextStyle(
-                                                            color: Colors.black,
-                                                            fontFamily:
-                                                                "regular",
-                                                            fontSize: 16.0),
-                                                      ),
-                                                    ],
-                                                  ),
-                                                ],
-                                              ),
+                                                    ),
+                                                  ],
+                                                )),
+                                            const SizedBox(
+                                              width: 24.0,
                                             ),
-                                          ],
-                                        )),
-                                        const SizedBox(
-                                          width: 24.0,
-                                        ),
-                                        InkWell(
-                                          onTap: () {},
-                                          child: Container(
-                                            height: 42.0,
-                                            width: 110.0,
-                                            decoration: BoxDecoration(
-                                                borderRadius:
+                                            InkWell(
+                                              onTap: () {},
+                                              child: Container(
+                                                height: 42.0,
+                                                width: 110.0,
+                                                decoration: BoxDecoration(
+                                                    borderRadius:
                                                     BorderRadius.circular(12.0),
-                                                color: (item.isActive ==
-                                                            false ||
+                                                    color: (item.isActive ==
+                                                        false ||
                                                         item.isActive == null)
-                                                    ? Colors.red
-                                                    : Colors.green),
-                                            child: Center(
-                                              child: Text(
-                                                  (item.isActive == false ||
+                                                        ? Colors.red
+                                                        : Colors.green),
+                                                child: Center(
+                                                  child: Text(
+                                                      (item.isActive == false ||
                                                           item.isActive == null)
-                                                      ? 'غیر فعال'
-                                                      : 'فعال',
-                                                  style: const TextStyle(
-                                                      color: Colors.black,
-                                                      fontFamily: "medium",
-                                                      fontSize: 14.0)),
-                                            ),
-                                          ),
-                                        ),
-                                        const SizedBox(
-                                          width: 24.0,
-                                        ),
-                                        PopupMenuButton<String>(
-                                          onSelected: (value) {
-                                            if (value == 'edit') {
-                                              setState(() {
-                                                nameController.text = item.name;
-                                                describeController.text =
-                                                    item.description;
-                                                costOfTicketController.text =
-                                                    item.price;
-                                                numberOfTicketController.text =
-                                                    item.count.toString();
-                                                ticketIsActivated =
-                                                    item.isActive!;
-                                              });
-                                              addEditItemsDialog(
-                                                  item.documentId);
-                                            } else if (value == 'delete') {
-                                              _deleteDataToServer(
-                                                  item.documentId);
-                                            }
-                                          },
-                                          itemBuilder: (BuildContext context) {
-                                            return [
-                                              const PopupMenuItem(
-                                                value: "edit",
-                                                child: Align(
-                                                  alignment:
-                                                      Alignment.centerRight,
-                                                  child: Text("ویرایش",
-                                                      style: TextStyle(
-                                                          color: Colors.black,
+                                                          ? 'غیر فعال'
+                                                          : 'فعال',
+                                                      style: const TextStyle(
+                                                          color: Colors.white,
                                                           fontFamily: "medium",
                                                           fontSize: 14.0)),
                                                 ),
                                               ),
-                                              const PopupMenuItem(
-                                                value: "delete",
-                                                child: Align(
-                                                    alignment:
+                                            ),
+                                            const SizedBox(
+                                              width: 24.0,
+                                            ),
+                                            PopupMenuButton<String>(
+                                              onSelected: (value) {
+                                                if (value == 'edit') {
+                                                  setState(() {
+                                                    nameController.text = item.name;
+                                                    describeController.text =
+                                                        item.description;
+                                                    costOfTicketController.text =
+                                                        item.price;
+                                                    numberOfTicketController.text =
+                                                        item.count.toString();
+                                                    ticketIsActivated =
+                                                    item.isActive!;
+                                                  });
+                                                  addEditItemsDialog(
+                                                      item.documentId);
+                                                } else if (value == 'delete') {
+                                                  _deleteDataToServer(
+                                                      item.documentId);
+                                                }
+                                              },
+                                              itemBuilder: (BuildContext context) {
+                                                return [
+                                                  const PopupMenuItem(
+                                                    value: "edit",
+                                                    child: Align(
+                                                      alignment:
+                                                      Alignment.centerRight,
+                                                      child: Text("ویرایش",
+                                                          style: TextStyle(
+                                                              color: Colors.black,
+                                                              fontFamily: "medium",
+                                                              fontSize: 14.0)),
+                                                    ),
+                                                  ),
+                                                  const PopupMenuItem(
+                                                    value: "delete",
+                                                    child: Align(
+                                                        alignment:
                                                         Alignment.centerRight,
-                                                    child: Text("حذف",
-                                                        style: TextStyle(
-                                                            color: Colors.black,
-                                                            fontFamily:
+                                                        child: Text("حذف",
+                                                            style: TextStyle(
+                                                                color: Colors.black,
+                                                                fontFamily:
                                                                 "medium",
-                                                            fontSize: 14.0))),
-                                              ),
-                                            ];
-                                          },
-                                          icon: const Icon(
-                                              Icons.more_vert), // آیکن سه‌نقطه
+                                                                fontSize: 14.0))),
+                                                  ),
+                                                ];
+                                              },
+                                              icon: const Icon(
+                                                  Icons.more_vert), // آیکن سه‌نقطه
+                                            ),
+                                          ],
                                         ),
+                                        SizedBox(height: 24.0,),
+                                        Row(
+                                          mainAxisAlignment: MainAxisAlignment.center,
+                                          children: [
+                                            for(var imageItem in item.pics)
+                                              Container(
+                                                height: 120.0,
+                                                width: 120.0,
+                                                margin: EdgeInsets.only(left: 12.0),
+                                                child: ClipRRect(
+                                                  borderRadius: BorderRadius.circular(12.0),
+                                                  child: CachedNetworkImage(
+                                                    imageUrl: ConfigNetwork.baseUrlImage + imageItem.url,
+                                                    placeholder: (context, url) => CircularProgressIndicator(),
+                                                    errorWidget: (context, url, error) => Icon(Icons.error),
+                                                  ),
+                                                ),
+                                              )
+                                          ],
+                                        )
                                       ],
                                     ));
                               },
@@ -627,100 +664,165 @@ class _ServicesPageState extends State<ServicesPage> {
                         },
                       ),
                       const SizedBox(height: 16),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      // Row(
+                      //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      //   children: [
+                      //     Container(
+                      //         height: 48.0,
+                      //         width: MediaQuery.of(context).size.width * 0.24,
+                      //         decoration: BoxDecoration(
+                      //             color: const Color(0xFFD9D9D9),
+                      //             borderRadius: BorderRadius.circular(12.0)),
+                      //         child: Padding(
+                      //           padding: const EdgeInsets.only(
+                      //               left: 12.0, right: 12.0),
+                      //           child: Row(
+                      //             mainAxisAlignment:
+                      //                 MainAxisAlignment.spaceBetween,
+                      //             children: [
+                      //               const Text(
+                      //                 'انتخاب تصویر',
+                      //                 style: TextStyle(
+                      //                     fontSize: 14.0,
+                      //                     fontFamily: "regular",
+                      //                     color: Colors.black),
+                      //               ),
+                      //               IconButton(
+                      //                 icon: const Icon(Icons.attach_file),
+                      //                 onPressed: () {},
+                      //               ),
+                      //             ],
+                      //           ),
+                      //         )),
+                      //   ],
+                      // ),
+                      const Row(
                         children: [
-                          Container(
-                              height: 48.0,
-                              width: MediaQuery.of(context).size.width * 0.24,
-                              decoration: BoxDecoration(
-                                  color: const Color(0xFFD9D9D9),
-                                  borderRadius: BorderRadius.circular(12.0)),
-                              child: Padding(
-                                padding: const EdgeInsets.only(
-                                    left: 12.0, right: 12.0),
-                                child: Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
-                                  children: [
-                                    const Text(
-                                      'انتخاب تصویر',
-                                      style: TextStyle(
-                                          fontSize: 14.0,
-                                          fontFamily: "regular",
-                                          color: Colors.black),
-                                    ),
-                                    IconButton(
-                                      icon: const Icon(Icons.attach_file),
-                                      onPressed: () {},
-                                    ),
-                                  ],
-                                ),
-                              )),
-                          const SizedBox(
-                            width: 24.0,
-                          ),
-                          SizedBox(
-                            width: MediaQuery.of(context).size.width * 0.24,
-                            child: TextFormField(
-                              controller: costOfTicketController,
-                              keyboardType: TextInputType.number,
-                              inputFormatters: [
-                                FilteringTextInputFormatter.digitsOnly
-                              ],
-                              decoration: InputDecoration(
-                                filled: true,
-                                fillColor: const Color(0xFFD9D9D9),
-                                // رنگ پس‌زمینه
-                                hintText: 'هزینه هر بلیط',
-                                hintStyle: const TextStyle(
-                                    fontSize: 14.0,
-                                    fontFamily: "regular",
-                                    color: Colors.grey),
-                                border: InputBorder.none,
-                                // بدون حاشیه
-                                enabledBorder: OutlineInputBorder(
-                                  borderSide: BorderSide.none,
-                                  // بدون حاشیه در حالت عادی
-                                  borderRadius: BorderRadius.circular(12.0),
-                                ),
-                                focusedBorder: OutlineInputBorder(
-                                  borderSide:
-                                      const BorderSide(color: Colors.grey),
-                                  // حاشیه هنگام فوکوس
-                                  borderRadius: BorderRadius.circular(12.0),
-                                ),
-                                errorBorder: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(12.0),
-                                  borderSide: const BorderSide(
-                                      color: Colors.red), // حاشیه قرمز در خطا
-                                ),
-                                focusedErrorBorder: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(12.0),
-                                  borderSide: const BorderSide(
-                                      color: Colors
-                                          .red), // حاشیه قرمز در خطا هنگام فوکوس
-                                ),
-                                errorStyle: const TextStyle(
-                                    fontSize: 12.0,
-                                    fontFamily: "regular",
-                                    color: Colors.red),
-                                contentPadding: const EdgeInsets.symmetric(
-                                    horizontal: 12.0, vertical: 16.0),
-                              ),
-                              style: const TextStyle(
+                          Text('انتخاب تصویر برای خدمت',
+                              style: TextStyle(
                                   fontSize: 14.0,
-                                  fontFamily: "regular",
-                                  color: Colors.black),
-                              validator: (value) {
-                                if (value == null || value.isEmpty) {
-                                  return 'هزینه هر بلیط نباید خالی باشد';
-                                }
-                                return null;
-                              },
-                            ),
-                          ),
+                                  fontFamily: "medium",
+                                  color: Colors.black))
                         ],
+                      ),
+                      const SizedBox(height: 16),
+                      Row(
+                        children: [
+                          for(var images in imagesFromGalleryForSelect)
+                            InkWell(
+                              onTap: (){
+
+                                print(images.imageId);
+                                setState((){
+                                  images.isSelect = !images.isSelect;
+
+                                });
+
+                                // در رابط کاربری:
+                                setState(() {
+                                  images.isSelect = !images.isSelect; // تغییر وضعیت
+                                  toggleSelection(images); // بروزرسانی لیست انتخابی‌ها
+                                });
+
+
+
+
+
+                              },
+                              child: Container(
+                                height: 120.0,
+                                width: 120.0,
+                                decoration: BoxDecoration(
+                                  border: Border.all(
+                                    color: (images.isSelect == true)?Colors.green:Colors.transparent,
+                                    width: 2.0
+                                  ),
+                                  borderRadius: BorderRadius.circular(12.0),
+                                ),
+                                margin: const EdgeInsets.only(left: 12.0),
+                                child: Stack(
+                                  children: [
+                                    Align(
+                                      alignment: Alignment.center,
+                                      child: ClipRRect(
+                                        borderRadius: BorderRadius.circular(12.0),
+                                        child: CachedNetworkImage(
+                                          imageUrl: ConfigNetwork.baseUrlImage + images.url,
+                                          placeholder: (context, url) => const CircularProgressIndicator(),
+                                          errorWidget: (context, url, error) => Icon(Icons.error),
+                                        ),
+                                      ),
+                                    ),
+                                    Align(
+                                      alignment: Alignment.topRight,
+                                      child: (images.isSelect == true)?const Padding(
+                                        padding: EdgeInsets.all(8.0),
+                                        child: Icon(Icons.check_box, color: Colors.green,),
+                                      ): Container(),
+                                    )
+                                  ],
+                                )
+                              ),
+                            )
+                        ],
+                      ),
+                      const SizedBox(height: 16),
+                      TextFormField(
+                        controller: costOfTicketController,
+                        keyboardType: TextInputType.number,
+                        inputFormatters: [
+                          FilteringTextInputFormatter.digitsOnly
+                        ],
+                        decoration: InputDecoration(
+                          filled: true,
+                          fillColor: const Color(0xFFD9D9D9),
+                          // رنگ پس‌زمینه
+                          hintText: 'هزینه هر بلیط',
+                          hintStyle: const TextStyle(
+                              fontSize: 14.0,
+                              fontFamily: "regular",
+                              color: Colors.grey),
+                          border: InputBorder.none,
+                          // بدون حاشیه
+                          enabledBorder: OutlineInputBorder(
+                            borderSide: BorderSide.none,
+                            // بدون حاشیه در حالت عادی
+                            borderRadius: BorderRadius.circular(12.0),
+                          ),
+                          focusedBorder: OutlineInputBorder(
+                            borderSide:
+                            const BorderSide(color: Colors.grey),
+                            // حاشیه هنگام فوکوس
+                            borderRadius: BorderRadius.circular(12.0),
+                          ),
+                          errorBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(12.0),
+                            borderSide: const BorderSide(
+                                color: Colors.red), // حاشیه قرمز در خطا
+                          ),
+                          focusedErrorBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(12.0),
+                            borderSide: const BorderSide(
+                                color: Colors
+                                    .red), // حاشیه قرمز در خطا هنگام فوکوس
+                          ),
+                          errorStyle: const TextStyle(
+                              fontSize: 12.0,
+                              fontFamily: "regular",
+                              color: Colors.red),
+                          contentPadding: const EdgeInsets.symmetric(
+                              horizontal: 12.0, vertical: 16.0),
+                        ),
+                        style: const TextStyle(
+                            fontSize: 14.0,
+                            fontFamily: "regular",
+                            color: Colors.black),
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return 'هزینه هر بلیط نباید خالی باشد';
+                          }
+                          return null;
+                        },
                       ),
                       const SizedBox(height: 16),
                       Row(
@@ -929,4 +1031,71 @@ class _ServicesPageState extends State<ServicesPage> {
       },
     );
   }
+
+
+  Future<List<GetGalleryDataModel>?> getGalleryFromServer() async {
+    setState(() {
+      imagesFromGalleryForSelect.clear();
+      isImageGetLoading = false;
+    });
+    try {
+      Response response = await dio.get('/upload/files'); // مسیر درخواست
+      if (response.statusCode == 200) {
+        // تبدیل داده‌های پاسخ به لیست مدل
+        List<GetGalleryDataModel> galleryData = (response.data as List)
+            .map((item) => GetGalleryDataModel.fromJson(item))
+            .toList();
+
+        setState(() {
+          isImageGetLoading = true;
+        });
+        for (var elements in galleryData) {
+          imagesFromGalleryForSelect.add(ImageItemList(
+              imageId: elements.id.toString(),
+              name: elements.name,
+              url: elements.url,
+              isSelect : false
+          ));
+        }
+
+        return galleryData;
+      } else {
+        print('Request failed: ${response.statusCode}');
+        return null;
+      }
+    } catch (e) {
+      if (e is DioError) {
+        // مدیریت خطاهای مربوط به Dio
+        print('DioError: ${e.response?.data ?? e.message}');
+      } else {
+        // مدیریت سایر خطاها
+        print('Unexpected error: $e');
+      }
+      return null;
+    }
+  }
+
+
+  // مدیریت وضعیت انتخاب
+  void toggleSelection(ImageItemList image) {
+    if (image.isSelect) {
+      if (!selectedImages.any((selectedImage) => selectedImage.imageId == image.imageId)) {
+        selectedImages.add(image);
+      }
+    } else {
+      selectedImages.removeWhere((selectedImage) => selectedImage.imageId == image.imageId);
+    }
+  }
+
+
+
+}
+
+class ImageItemList {
+  String name;
+  String imageId;
+  String url;
+  bool isSelect;
+
+  ImageItemList({required this.name, required this.imageId, required this.url, required this.isSelect});
 }

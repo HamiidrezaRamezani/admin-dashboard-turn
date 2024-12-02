@@ -8,7 +8,7 @@ class ServicesApiServer {
 
   Future<GetServicesModel?> getServicesFromServer() async {
     try {
-      Response response = await dio.get('/services'); // مسیر درخواست
+      Response response = await dio.get('/services?populate=*'); // مسیر درخواست
       if (response.statusCode == 200) {
         // تبدیل داده‌های پاسخ به مدل
         return GetServicesModel.fromJson(response.data);
