@@ -730,19 +730,19 @@ class _ServicesPageState extends State<ServicesPage> {
                           itemCount: imagesFromGalleryForSelect.length,
                           itemBuilder: (context, index) {
                             final image = imagesFromGalleryForSelect[index];
-                            final isSelected =
-                            selectedImages.any((element) =>
-                            element["id"] == image.imageId);
                             return InkWell(
                               onTap: (){
-                                toggleSelection(image.imageId!);
+                                toggleSelection(image.imageId);
+                                setState((){
+                                  image.isSelect = !image.isSelect;
+                                });
                               },
                               child: Container(
                                   height: 120.0,
                                   width: 120.0,
                                   decoration: BoxDecoration(
                                     border: Border.all(
-                                        color: (isSelected == true)
+                                        color: (image.isSelect == true)
                                             ? Colors.green
                                             : Colors.transparent,
                                         width: 2.0
@@ -769,7 +769,7 @@ class _ServicesPageState extends State<ServicesPage> {
                                       ),
                                       Align(
                                         alignment: Alignment.topRight,
-                                        child: (isSelected == true)
+                                        child: (image.isSelect == true)
                                             ? const Padding(
                                           padding: EdgeInsets.all(8.0),
                                           child: Icon(Icons.check_box,
@@ -1057,7 +1057,7 @@ class _ServicesPageState extends State<ServicesPage> {
                             "price": costOfTicketController.text,
                             "count": ticketCount,
                             "isactive": ticketIsActivated,
-                            "pic": null
+                            "pic": selectedImages
                           }
                         };
 
@@ -1086,7 +1086,7 @@ class _ServicesPageState extends State<ServicesPage> {
                             "price": costOfTicketController.text,
                             "count": ticketCount,
                             "isactive": ticketIsActivated,
-                            "pic": null
+                            "pic": selectedImages
                           }
                         };
 
@@ -1095,7 +1095,11 @@ class _ServicesPageState extends State<ServicesPage> {
                       }
                     }
                   },
-                  child: const Text('ایجاد خدمت',
+                  child: (documentId == '')? Text('ایجاد خدمت',
+                      style: TextStyle(
+                          fontSize: 14.0,
+                          fontFamily: "regular",
+                          color: Colors.white)):Text('ویرایش خدمت',
                       style: TextStyle(
                           fontSize: 14.0,
                           fontFamily: "regular",
@@ -1168,20 +1172,22 @@ class _ServicesPageState extends State<ServicesPage> {
     }
   }
 
+
   void toggleSelection(String id) {
-    print(id);
-    setState(() {
-      final selectedIndex =
-      selectedImages.indexWhere((element) => element["id"] == id);
-      if (selectedIndex == -1) {
-        selectedImages.add({"id": id});
-      } else {
-        selectedImages.removeAt(selectedIndex);
-      }
-      print(selectedImages.length);
-      print(selectedImages);
-    });
+    // بررسی وجود آیتم در لیست
+    final existingIndex = selectedImages.indexWhere((element) => element["id"] == id);
+
+    if (existingIndex != -1) {
+      // اگر آیتم موجود باشد، حذف کن
+      selectedImages.removeAt(existingIndex);
+    } else {
+      // اگر آیتم موجود نباشد، اضافه کن
+      selectedImages.add({
+        "id": id,
+      });
+    }
   }
+
 
 
 }
