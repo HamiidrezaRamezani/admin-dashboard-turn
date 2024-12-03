@@ -9,7 +9,7 @@ class GetServicesDataModel {
   final DateTime updatedAt;
   final DateTime publishedAt;
   final bool isActive;
-  final List<Picture> pics;
+  final List<Picture>? pics;
 
   GetServicesDataModel({
     required this.id,
@@ -37,7 +37,9 @@ class GetServicesDataModel {
       updatedAt: DateTime.parse(json['updatedAt']),
       publishedAt: DateTime.parse(json['publishedAt']),
       isActive: json['isactive'],
-      pics: (json['pic'] as List).map((e) => Picture.fromJson(e)).toList(),
+      pics:  (json['pic'] != null && json['pic'] is List)
+          ? (json['pic'] as List).map((e) => Picture.fromJson(e)).toList()
+          : [],
     );
   }
 }

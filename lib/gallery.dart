@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:file_picker/file_picker.dart';
@@ -70,21 +71,21 @@ class _GalleryState extends State<Gallery> {
 
       if (fileBytes != null) {
         loadingDialog(); // نمایش دیالوگ لودینگ
-        // ارسال فایل به سرور
-        bool? uploadSuccess = await _apiServer.uploadFile(fileBytes, fileName);
+        bool? uploadSuccess = await GalleryApiServer().uploadFile(fileBytes, fileName); // استفاده از متد جدید
 
-        if (uploadSuccess!) {
+        if (uploadSuccess == true) {
           print('File uploaded successfully.');
 
           setState(() {
             // به روز رسانی _futureData با داده‌های جدید
-            _futureData = _fetchData(); // اینجا متغیر Future را به روز می‌کنید
+            _futureData = _fetchData();
           });
           if (mounted) Navigator.of(context).pop();
         } else {
           print('File upload failed.');
         }
-      } else {
+      }
+      else {
         print('No file bytes found.');
       }
     } else {

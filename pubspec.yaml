@@ -38,6 +38,7 @@ dependencies:
   dio: ^5.7.0
   file_picker: ^8.1.4
   cached_network_image: ^3.4.1
+  mime: ^2.0.0
 
 
 dev_dependencies:

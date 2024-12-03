@@ -438,25 +438,27 @@ class _ServicesPageState extends State<ServicesPage> {
                                       ),
                                     ],
                                   ),
-                                  SizedBox(height: 24.0,),
+                                  const SizedBox(height: 24.0,),
+                                  const Divider(),
+                                  const SizedBox(height: 24.0,),
                                   Row(
                                     mainAxisAlignment: MainAxisAlignment.center,
                                     children: [
-                                      for(var imageItem in item.pics)
+                                      for(var imageItem in item.pics!)
                                         Container(
                                           height: 120.0,
                                           width: 120.0,
-                                          margin: EdgeInsets.only(left: 12.0),
+                                          margin: const EdgeInsets.only(left: 12.0),
                                           child: ClipRRect(
                                             borderRadius: BorderRadius.circular(
                                                 12.0),
                                             child: CachedNetworkImage(
                                               imageUrl: ConfigNetwork
                                                   .baseUrlImage + imageItem.url,
-                                              placeholder: (context, url) =>
-                                                  CircularProgressIndicator(),
+                                              fit: BoxFit.cover,
+                                              placeholder: (context, url) => const Center(child: CircularProgressIndicator(),),
                                               errorWidget: (context, url,
-                                                  error) => Icon(Icons.error),
+                                                  error) => const Icon(Icons.error),
                                             ),
                                           ),
                                         )
@@ -763,7 +765,7 @@ class _ServicesPageState extends State<ServicesPage> {
                                             placeholder: (context,
                                                 url) => const CircularProgressIndicator(),
                                             errorWidget: (context, url,
-                                                error) => Icon(Icons.error),
+                                                error) => const Icon(Icons.error),
                                           ),
                                         ),
                                       ),
@@ -1095,11 +1097,11 @@ class _ServicesPageState extends State<ServicesPage> {
                       }
                     }
                   },
-                  child: (documentId == '')? Text('ایجاد خدمت',
+                  child: (documentId == '')? const Text('ایجاد خدمت',
                       style: TextStyle(
                           fontSize: 14.0,
                           fontFamily: "regular",
-                          color: Colors.white)):Text('ویرایش خدمت',
+                          color: Colors.white)):const Text('ویرایش خدمت',
                       style: TextStyle(
                           fontSize: 14.0,
                           fontFamily: "regular",

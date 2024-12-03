@@ -77,7 +77,7 @@ class _UsersState extends State<Users> {
                 const Row(
                   children: [
                     Text(
-                      'کاربران',
+                      'کاربران ثبت نام شده',
                       style: TextStyle(
                           color: Colors.black, fontFamily: "bold", fontSize: 30.0),
                     ),

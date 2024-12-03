@@ -120,7 +120,7 @@ class _ReportsState extends State<Reports> {
                                 ),
                                 Align(
                                   alignment: Alignment.topRight,
-                                  child: Text('کاربران ثبت نام شده', style: TextStyle(fontSize: 16.0, fontFamily: "regular", color: Colors.white),),
+                                  child: Text('کل کاربرانی که وارد سامانه شدند', style: TextStyle(fontSize: 16.0, fontFamily: "regular", color: Colors.white),),
                                 )
                               ],
                             ),),
