@@ -66,7 +66,7 @@ class _ReportsState extends State<Reports> {
                     padding: const EdgeInsets.only(left: 36.0, right: 36.0),
                     child: Row(
                       children: [
-                        Expanded(
+                        Flexible(
                           child: Container(
                             height: MediaQuery.of(context).size.height * 0.2,
                             decoration: const BoxDecoration(
@@ -98,7 +98,7 @@ class _ReportsState extends State<Reports> {
                         const SizedBox(
                           width: 36.0,
                         ),
-                        Expanded(
+                        Flexible(
                           child: Container(
                             height: MediaQuery.of(context).size.height * 0.2,
                             decoration: const BoxDecoration(
@@ -129,7 +129,7 @@ class _ReportsState extends State<Reports> {
                         const SizedBox(
                           width: 36.0,
                         ),
-                        Expanded(
+                        Flexible(
                           child: Container(
                             height: MediaQuery.of(context).size.height * 0.2,
                             decoration: const BoxDecoration(
@@ -215,10 +215,10 @@ class _ReportsState extends State<Reports> {
                                   const SizedBox(
                                     width: 24.0,
                                   ),
-                                  Expanded(
+                                  Flexible(
                                       child: Row(
                                         children: [
-                                          Expanded(
+                                          Flexible(
                                             flex: 1,
                                             child: Column(
                                               children: [
@@ -286,7 +286,7 @@ class _ReportsState extends State<Reports> {
                                           const SizedBox(
                                             width: 24.30,
                                           ),
-                                          Expanded(
+                                          Flexible(
                                             flex: 1,
                                             child: Column(
                                               children: [

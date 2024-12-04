@@ -310,7 +310,7 @@ class _ServicesPageState extends State<ServicesPage> {
                                                           width: 4.0,
                                                         ),
                                                         const Text(
-                                                          'تومان',
+                                                          'ریال',
                                                           style: TextStyle(
                                                               color: Colors
                                                                   .black,
