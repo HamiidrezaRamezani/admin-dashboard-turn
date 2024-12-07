@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:turn_rating_launcher/utils/convert_to_excel.dart';
 
 import 'api/data/services/users_api_server.dart';
 import 'api/models/users_models/get_users_data_model.dart';
@@ -12,18 +13,27 @@ class Users extends StatefulWidget {
 
 class _UsersState extends State<Users> {
 
-  late Future<List<GetUserDataModel?>> _futureData;
+  late Future<List<GetRegisteredUserDataModel?>> _futureDataUsers;
+  late Future<List<GetAllUserDataModel?>> _futureDataAllUsers;
   final UsersApiServer _apiServer = UsersApiServer(); // نمونه کلاس API
 
   @override
   void initState() {
     super.initState();
-    _futureData = _fetchData();
+    _futureDataUsers = _fetchData();
+    _futureDataAllUsers = _fetchDataAllUser();
   }
 
-  Future<List<GetUserDataModel?>> _fetchData() async {
+  Future<List<GetRegisteredUserDataModel?>> _fetchData() async {
     try {
-      return await _apiServer.getUsersFromServer() ?? [];
+      return await _apiServer.getRegisteredUsersFromServer() ?? [];
+    } catch (e) {
+      return [];
+    }
+  }
+  Future<List<GetAllUserDataModel?>> _fetchDataAllUser() async {
+    try {
+      return await _apiServer.getAllUsersFromServer() ?? [];
     } catch (e) {
       return [];
     }
@@ -41,7 +51,8 @@ class _UsersState extends State<Users> {
         // پس از موفقیت، داده‌ها را مجدد دریافت کنید
         setState(() {
           // به روز رسانی _futureData با داده‌های جدید
-          _futureData = _fetchData(); // اینجا متغیر Future را به روز می‌کنید
+          _futureDataUsers = _fetchData(); // اینجا متغیر Future را به روز می‌کنید
+          _futureDataAllUsers = _fetchDataAllUser();
         });
       } else {
         print("Delete request failed.");
@@ -58,37 +69,43 @@ class _UsersState extends State<Users> {
 
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder<List<GetUserDataModel?>>(future: _futureData, builder: (context, snapshot){
-      if(snapshot.connectionState == ConnectionState.waiting){
-        return const Center(
-          child: CircularProgressIndicator(),
-        );
-      }else if(snapshot.hasError){
-        return Center(
-          child: Text('Error ${snapshot.error}'),
-        );
-      }else if(snapshot.hasData && snapshot.data != null){
-        final items = snapshot.data!;
-        return Scaffold(
-          body: Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Column(
+    return Scaffold(
+      body: Padding(
+        padding: EdgeInsets.only(left: 16.0, right: 16.0),
+        child: ListView(
+          shrinkWrap: true,
+          children: [
+            const SizedBox(
+              height: 24.0,
+            ),
+            const Row(
               children: [
-                const Row(
-                  children: [
-                    Text(
-                      'کاربران ثبت نام شده',
-                      style: TextStyle(
-                          color: Colors.black, fontFamily: "bold", fontSize: 30.0),
-                    ),
-                  ],
+                Text(
+                  'کل کاربران',
+                  style: TextStyle(
+                      color: Colors.black, fontFamily: "bold", fontSize: 30.0),
                 ),
-                const SizedBox(
-                  height: 24.0,
-                ),
-                Expanded(
+              ],
+            ),
+            const SizedBox(
+              height: 24.0,
+            ),
+            Expanded(flex: 4,child:FutureBuilder<List<GetAllUserDataModel?>>(future: _futureDataAllUsers, builder: (context, snapshot){
+              if(snapshot.connectionState == ConnectionState.waiting){
+                return const Center(
+                  child: CircularProgressIndicator(),
+                );
+              }else if(snapshot.hasError){
+                return Center(
+                  child: Text('Error ${snapshot.error}'),
+                );
+              }else if(snapshot.hasData && snapshot.data != null){
+                final items = snapshot.data!;
+                return Padding(
+                    padding: const EdgeInsets.all(16.0),
                     child: ListView.builder(
                         itemCount: items.length,
+                        shrinkWrap: true,
                         itemBuilder: (BuildContext context, int index) {
                           var item = items[index];
                           return Container(
@@ -188,77 +205,7 @@ class _UsersState extends State<Users> {
                                             ),
                                           ),
                                           const SizedBox(
-                                            width: 24.30,
-                                          ),
-                                          Expanded(
-                                            flex: 1,
-                                            child: Column(
-                                              children: [
-                                                Row(
-                                                  children: [
-                                                    const Text(
-                                                      'کل پرداختی : ',
-                                                      style: TextStyle(
-                                                          color: Colors.black,
-                                                          fontFamily: "bold",
-                                                          fontSize: 16.0),
-                                                    ),
-                                                    const SizedBox(
-                                                      width: 4.0,
-                                                    ),
-                                                    Text(
-                                                      formatNumberManually(
-                                                          item.totalAmountSpent.toString()),
-                                                      style: const TextStyle(
-                                                          color: Colors.black,
-                                                          fontFamily:
-                                                          "regular",
-                                                          fontSize: 16.0),
-                                                    ),
-                                                    const SizedBox(
-                                                      width: 4.0,
-                                                    ),
-                                                    const Text(
-                                                      'تومان',
-                                                      style: TextStyle(
-                                                          color: Colors.black,
-                                                          fontFamily:
-                                                          "regular",
-                                                          fontSize: 16.0),
-                                                    ),
-                                                  ],
-                                                ),
-                                                const SizedBox(
-                                                  height: 24.0,
-                                                ),
-                                                Row(
-                                                  children: [
-                                                    const Text(
-                                                      'تعداد خدمت : ',
-                                                      style: TextStyle(
-                                                          color: Colors.black,
-                                                          fontFamily: "bold",
-                                                          fontSize: 16.0),
-                                                    ),
-                                                    const SizedBox(
-                                                      width: 4.0,
-                                                    ),
-                                                    Text(
-                                                      item.totalTickets.toString(),
-                                                      // '12',
-                                                      style: const TextStyle(
-                                                          color: Colors.black,
-                                                          fontFamily:
-                                                          "regular",
-                                                          fontSize: 16.0),
-                                                    ),
-                                                  ],
-                                                ),
-                                              ],
-                                            ),
-                                          ),
-                                          const SizedBox(
-                                            width: 24.30,
+                                            width: 24.0,
                                           ),
                                           Expanded(
                                             flex: 1,
@@ -348,30 +295,331 @@ class _UsersState extends State<Users> {
                                   ),
                                 ],
                               ));
-                        })),
-                const SizedBox(
-                  height: 36.0,
+                        })
+                );
+              } else {
+                return const Center(
+                  child: Text('No data available'),
+                );
+              }
+            }),),
+            const SizedBox(
+              height: 24.0,
+            ),
+            const Row(
+              children: [
+                Text(
+                  'کاربران ثبت نام شده',
+                  style: TextStyle(
+                      color: Colors.black, fontFamily: "bold", fontSize: 30.0),
                 ),
               ],
             ),
-          ),
-          floatingActionButton: FloatingActionButton.extended(
-            onPressed: () {
-            },
-            label: const Text(
-              'دریافت فایل Excel',
-              style: TextStyle(
-                  color: Color(0xFFFFFFFF), fontFamily: "bold", fontSize: 16.0),
+            const SizedBox(
+              height: 24.0,
             ),
-            backgroundColor: const Color(0xFF628DFF),
-          ),
-        );
-      } else {
-        return const Center(
-          child: Text('No data available'),
-        );
-      }
-    });
+           Expanded(
+             flex: 4,
+             child: Container(
+               child: FutureBuilder<List<GetRegisteredUserDataModel?>>(future: _futureDataUsers, builder: (context, snapshot){
+                 if(snapshot.connectionState == ConnectionState.waiting){
+                   return const Center(
+                     child: CircularProgressIndicator(),
+                   );
+                 }else if(snapshot.hasError){
+                   return Center(
+                     child: Text('Error ${snapshot.error}'),
+                   );
+                 }else if(snapshot.hasData && snapshot.data != null){
+                   final items = snapshot.data!;
+                   return Padding(
+                     padding: const EdgeInsets.all(16.0),
+                     child: ListView.builder(
+                         itemCount: items.length,
+                         shrinkWrap: true,
+                         itemBuilder: (BuildContext context, int index) {
+                           var item = items[index];
+                           return Container(
+                               margin: const EdgeInsets.only(
+                                   top: 8.0, bottom: 8.0),
+                               padding: const EdgeInsets.all(16.0),
+                               decoration: BoxDecoration(
+                                 color: (index % 2 == 0)
+                                     ? const Color(0xFF007BFF).withOpacity(0.2)
+                                     : const Color(0xFF007BFF).withOpacity(0.1),
+                                 borderRadius: BorderRadius.circular(12.0),
+                               ),
+                               child: Row(
+                                 children: [
+                                   SizedBox(
+                                     height: 36.0,
+                                     width: 36.0,
+                                     child: Center(
+                                       child: Text(
+                                         (index + 1).toString(),
+                                         style: const TextStyle(
+                                             color: Colors.black,
+                                             fontFamily: "bold",
+                                             fontSize: 24.0),
+                                       ),
+                                     ),
+                                   ),
+                                   const SizedBox(
+                                     width: 24.0,
+                                   ),
+                                   Expanded(
+                                       child: Row(
+                                         children: [
+                                           Expanded(
+                                             flex: 1,
+                                             child: Column(
+                                               children: [
+                                                 Row(
+                                                   children: [
+                                                     const Text(
+                                                       'نام کاربر : ',
+                                                       style: TextStyle(
+                                                           color: Colors.black,
+                                                           fontFamily: "bold",
+                                                           fontSize: 16.0),
+                                                     ),
+                                                     const SizedBox(
+                                                       width: 4.0,
+                                                     ),
+                                                     Text(
+                                                       (item!.name == null)?'ندارد':item.name!,
+                                                       style: const TextStyle(
+                                                           color: Colors.black,
+                                                           fontFamily:
+                                                           "regular",
+                                                           fontSize: 16.0),
+                                                     ),
+                                                   ],
+                                                 ),
+                                                 const SizedBox(
+                                                   height: 24.0,
+                                                 ),
+                                                 Row(
+                                                   children: [
+                                                     const Text(
+                                                       'ایمیل کاربر : ',
+                                                       style: TextStyle(
+                                                           color: Colors.black,
+                                                           fontFamily: "bold",
+                                                           fontSize: 16.0),
+                                                     ),
+                                                     const SizedBox(
+                                                       width: 4.0,
+                                                     ),
+                                                     Flexible(
+                                                       // اضافه کردن Flexible برای کنترل فضای متغیر
+                                                       child: Text(
+                                                         item.email,
+                                                         maxLines: 2,
+                                                         // محدود کردن به دو خط
+                                                         overflow: TextOverflow
+                                                             .ellipsis,
+                                                         // نشان دادن ... در صورت بلند بودن متن
+                                                         style:
+                                                         const TextStyle(
+                                                             color: Colors
+                                                                 .black,
+                                                             fontFamily:
+                                                             "regular",
+                                                             fontSize:
+                                                             16.0),
+                                                       ),
+                                                     ),
+                                                   ],
+                                                 ),
+                                               ],
+                                             ),
+                                           ),
+                                           const SizedBox(
+                                             width: 24.30,
+                                           ),
+                                           Expanded(
+                                             flex: 1,
+                                             child: Column(
+                                               children: [
+                                                 Row(
+                                                   children: [
+                                                     const Text(
+                                                       'کل پرداختی : ',
+                                                       style: TextStyle(
+                                                           color: Colors.black,
+                                                           fontFamily: "bold",
+                                                           fontSize: 16.0),
+                                                     ),
+                                                     const SizedBox(
+                                                       width: 4.0,
+                                                     ),
+                                                     Text(
+                                                       formatNumberManually(
+                                                           item.totalAmountSpent.toString()),
+                                                       style: const TextStyle(
+                                                           color: Colors.black,
+                                                           fontFamily:
+                                                           "regular",
+                                                           fontSize: 16.0),
+                                                     ),
+                                                     const SizedBox(
+                                                       width: 4.0,
+                                                     ),
+                                                     const Text(
+                                                       'تومان',
+                                                       style: TextStyle(
+                                                           color: Colors.black,
+                                                           fontFamily:
+                                                           "regular",
+                                                           fontSize: 16.0),
+                                                     ),
+                                                   ],
+                                                 ),
+                                                 const SizedBox(
+                                                   height: 24.0,
+                                                 ),
+                                                 Row(
+                                                   children: [
+                                                     const Text(
+                                                       'تعداد خدمت : ',
+                                                       style: TextStyle(
+                                                           color: Colors.black,
+                                                           fontFamily: "bold",
+                                                           fontSize: 16.0),
+                                                     ),
+                                                     const SizedBox(
+                                                       width: 4.0,
+                                                     ),
+                                                     Text(
+                                                       item.totalTickets.toString(),
+                                                       // '12',
+                                                       style: const TextStyle(
+                                                           color: Colors.black,
+                                                           fontFamily:
+                                                           "regular",
+                                                           fontSize: 16.0),
+                                                     ),
+                                                   ],
+                                                 ),
+                                               ],
+                                             ),
+                                           ),
+                                           const SizedBox(
+                                             width: 24.30,
+                                           ),
+                                           Expanded(
+                                             flex: 1,
+                                             child: Column(
+                                               children: [
+                                                 Row(
+                                                   children: [
+                                                     const Text(
+                                                       'کد ملی : ',
+                                                       style: TextStyle(
+                                                           color: Colors.black,
+                                                           fontFamily: "bold",
+                                                           fontSize: 16.0),
+                                                     ),
+                                                     const SizedBox(
+                                                       width: 4.0,
+                                                     ),
+                                                     Text(
+                                                       (item.nationalCode == null)?'ندارد':item.nationalCode!,
+                                                       // formatNumberManually(
+                                                       //     item.price),
+                                                       style: const TextStyle(
+                                                           color: Colors.black,
+                                                           fontFamily:
+                                                           "regular",
+                                                           fontSize: 16.0),
+                                                     ),
+                                                   ],
+                                                 ),
+                                                 const SizedBox(
+                                                   height: 24.0,
+                                                 ),
+                                                 Row(
+                                                   children: [
+                                                     const Text(
+                                                       'شماره تلفن : ',
+                                                       style: TextStyle(
+                                                           color: Colors.black,
+                                                           fontFamily: "bold",
+                                                           fontSize: 16.0),
+                                                     ),
+                                                     const SizedBox(
+                                                       width: 4.0,
+                                                     ),
+                                                     Text(
+                                                       (item.nationalCode == null)?'ندارد':item.nationalCode!,
+                                                       // formatNumberManually(
+                                                       //     item.price),
+                                                       style: const TextStyle(
+                                                           color: Colors.black,
+                                                           fontFamily:
+                                                           "regular",
+                                                           fontSize: 16.0),
+                                                     ),
+                                                   ],
+                                                 ),
+                                               ],
+                                             ),
+                                           ),
+                                         ],
+                                       )),
+                                   const SizedBox(
+                                     width: 24.0,
+                                   ),
+                                   PopupMenuButton<String>(
+                                     onSelected: (value) {
+                                       _deleteDataToServer(item.id);
+                                     },
+                                     itemBuilder: (BuildContext context) {
+                                       return [
+                                         const PopupMenuItem(
+                                           value: "delete",
+                                           child: Align(
+                                               alignment:
+                                               Alignment.centerRight,
+                                               child: Text("حذف",
+                                                   style: TextStyle(
+                                                       color: Colors.black,
+                                                       fontFamily:
+                                                       "medium",
+                                                       fontSize: 14.0))),
+                                         ),
+                                       ];
+                                     },
+                                     icon: const Icon(
+                                         Icons.more_vert), // آیکن سه‌نقطه
+                                   ),
+                                 ],
+                               ));
+                         })
+                   );
+                 } else {
+                   return const Center(
+                     child: Text('No data available'),
+                   );
+                 }
+               }),
+             ),
+           ),
+          ],
+        ),
+      ),
+      floatingActionButton: FloatingActionButton.extended(
+        onPressed: () {
+        },
+        label: const Text(
+          'دریافت فایل Excel',
+          style: TextStyle(
+              color: Color(0xFFFFFFFF), fontFamily: "bold", fontSize: 16.0),
+        ),
+        backgroundColor: const Color(0xFF628DFF),
+      ),
+    );
   }
 
   loadingDialog() {

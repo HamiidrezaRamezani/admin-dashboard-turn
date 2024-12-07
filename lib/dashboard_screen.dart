@@ -3,6 +3,7 @@ import 'package:turn_rating_launcher/reports.dart';
 import 'package:turn_rating_launcher/services_page.dart';
 import 'package:turn_rating_launcher/users.dart';
 
+import 'categories.dart';
 import 'gallery.dart';
 
 class DashboardScreen extends StatefulWidget {
@@ -18,6 +19,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
 
   // List of pages to show
   final List<Widget> pages = [
+    const Categories(),
     ServicesPage(),
     const Users(),
     const Reports(),
@@ -39,8 +41,8 @@ class _DashboardScreenState extends State<DashboardScreen> {
                   height: 24.0,
                 ),
                 MenuItem(
-                  title: 'خدمات',
-                  icon: Icons.home_repair_service_outlined,
+                  title: 'دسته بندی ها',
+                  icon: Icons.category,
                   isSelected: selectedIndex == 0,
                   onTap: () {
                     setState(() {
@@ -52,8 +54,8 @@ class _DashboardScreenState extends State<DashboardScreen> {
                   height: 8.0,
                 ),
                 MenuItem(
-                  title: 'کاربران',
-                  icon: Icons.supervised_user_circle_sharp,
+                  title: 'خدمات',
+                  icon: Icons.home_repair_service_outlined,
                   isSelected: selectedIndex == 1,
                   onTap: () {
                     setState(() {
@@ -65,8 +67,8 @@ class _DashboardScreenState extends State<DashboardScreen> {
                   height: 8.0,
                 ),
                 MenuItem(
-                  title: 'گزارشات',
-                  icon: Icons.report,
+                  title: 'کاربران',
+                  icon: Icons.supervised_user_circle_sharp,
                   isSelected: selectedIndex == 2,
                   onTap: () {
                     setState(() {
@@ -78,12 +80,25 @@ class _DashboardScreenState extends State<DashboardScreen> {
                   height: 8.0,
                 ),
                 MenuItem(
-                  title: 'گالری',
-                  icon: Icons.image,
+                  title: 'گزارشات',
+                  icon: Icons.report,
                   isSelected: selectedIndex == 3,
                   onTap: () {
                     setState(() {
                       selectedIndex = 3;
+                    });
+                  },
+                ),
+                const SizedBox(
+                  height: 8.0,
+                ),
+                MenuItem(
+                  title: 'گالری',
+                  icon: Icons.image,
+                  isSelected: selectedIndex == 4,
+                  onTap: () {
+                    setState(() {
+                      selectedIndex = 4;
                     });
                   },
                 ),
