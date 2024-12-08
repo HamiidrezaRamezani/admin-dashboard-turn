@@ -364,15 +364,6 @@ class _ReportsState extends State<Reports> {
                 ],
               ),
             ),
-            floatingActionButton: FloatingActionButton.extended(
-              onPressed: () {},
-              label: const Text(
-                'دریافت فایل Excel',
-                style: TextStyle(
-                    color: Color(0xFFFFFFFF), fontFamily: "bold", fontSize: 16.0),
-              ),
-              backgroundColor: const Color(0xFF628DFF),
-            ),
           );
         } else {
           return const Center(

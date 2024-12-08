@@ -3,26 +3,28 @@ class GetServicesDataModel {
   final String documentId;
   final String name;
   final String description;
-  final String price;
+  final String basePrice;
   final int count;
   final DateTime createdAt;
   final DateTime updatedAt;
   final DateTime publishedAt;
   final bool isActive;
   final List<Picture>? pics;
+  final List<Option>? options;
 
   GetServicesDataModel({
     required this.id,
     required this.documentId,
     required this.name,
     required this.description,
-    required this.price,
+    required this.basePrice,
     required this.count,
     required this.createdAt,
     required this.updatedAt,
     required this.publishedAt,
     required this.isActive,
     required this.pics,
+    required this.options
   });
 
   factory GetServicesDataModel.fromJson(Map<String, dynamic> json) {
@@ -31,7 +33,7 @@ class GetServicesDataModel {
       documentId: json['documentId'],
       name: json['name'],
       description: json['description'],
-      price: json['price'],
+      basePrice: json['base_price'],
       count: json['count'],
       createdAt: DateTime.parse(json['createdAt']),
       updatedAt: DateTime.parse(json['updatedAt']),
@@ -39,6 +41,9 @@ class GetServicesDataModel {
       isActive: json['isactive'],
       pics:  (json['pic'] != null && json['pic'] is List)
           ? (json['pic'] as List).map((e) => Picture.fromJson(e)).toList()
+          : [],
+      options: (json['options'] != null && json['options'] is List)
+          ? (json['options'] as List).map((e) => Option.fromJson(e)).toList()
           : [],
     );
   }
@@ -78,6 +83,23 @@ class Picture {
       height: json['height'] ?? 0,
       formats: json['formats'] != null ? Formats.fromJson(json['formats']) : null,
       url: json['url'],
+    );
+  }
+}
+
+class Option {
+  final String name;
+  final int price;
+
+  Option({
+    required this.name,
+    required this.price,
+  });
+
+  factory Option.fromJson(Map<String, dynamic> json) {
+    return Option(
+      name: json['name'],
+      price: json['price'],
     );
   }
 }
@@ -139,45 +161,3 @@ class Format {
     );
   }
 }
-
-
-// class GetServicesDataModel {
-//   final int id;
-//   final String documentId;
-//   final String name;
-//   final String description;
-//   final String price;
-//   final int count;
-//   final DateTime createdAt;
-//   final DateTime updatedAt;
-//   final DateTime? publishedAt;
-//   final bool? isActive;
-//
-//   GetServicesDataModel({
-//     required this.id,
-//     required this.documentId,
-//     required this.name,
-//     required this.description,
-//     required this.price,
-//     required this.count,
-//     required this.createdAt,
-//     required this.updatedAt,
-//     this.publishedAt,
-//     this.isActive,
-//   });
-//
-//   factory GetServicesDataModel.fromJson(Map<String, dynamic> json) {
-//     return GetServicesDataModel(
-//       id: json['id'],
-//       documentId: json['documentId'],
-//       name: json['name'],
-//       description: json['description'],
-//       price: json['price'],
-//       count: json['count'],
-//       createdAt: DateTime.parse(json['createdAt']),
-//       updatedAt: DateTime.parse(json['updatedAt']),
-//       publishedAt: json['publishedAt'] != null ? DateTime.parse(json['publishedAt']) : null,
-//       isActive: json['isactive'],
-//     );
-//   }
-// }
