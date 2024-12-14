@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:turn_rating_launcher/payment_group_screen.dart';
 import 'package:turn_rating_launcher/reports.dart';
 import 'package:turn_rating_launcher/services_page.dart';
 import 'package:turn_rating_launcher/users.dart';
@@ -22,6 +23,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
     const Categories(),
     ServicesPage(),
     const Users(),
+    const PaymentGroupScreen(),
     const Reports(),
     const Gallery(),
   ];
@@ -80,8 +82,8 @@ class _DashboardScreenState extends State<DashboardScreen> {
                   height: 8.0,
                 ),
                 MenuItem(
-                  title: 'گزارشات',
-                  icon: Icons.report,
+                  title: 'نوع پرداخت',
+                  icon: Icons.payment,
                   isSelected: selectedIndex == 3,
                   onTap: () {
                     setState(() {
@@ -93,12 +95,25 @@ class _DashboardScreenState extends State<DashboardScreen> {
                   height: 8.0,
                 ),
                 MenuItem(
-                  title: 'گالری',
-                  icon: Icons.image,
+                  title: 'گزارشات',
+                  icon: Icons.report,
                   isSelected: selectedIndex == 4,
                   onTap: () {
                     setState(() {
                       selectedIndex = 4;
+                    });
+                  },
+                ),
+                const SizedBox(
+                  height: 8.0,
+                ),
+                MenuItem(
+                  title: 'گالری',
+                  icon: Icons.image,
+                  isSelected: selectedIndex == 5,
+                  onTap: () {
+                    setState(() {
+                      selectedIndex = 5;
                     });
                   },
                 ),

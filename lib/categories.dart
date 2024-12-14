@@ -725,11 +725,11 @@ class _CategoriesState extends State<Categories> {
                     //   }
                     // }
                   },
-                  child: (documentId == '')? const Text('ایجاد خدمت',
+                  child: (documentId == '')? const Text('ایجاد دسته بندی',
                       style: TextStyle(
                           fontSize: 14.0,
                           fontFamily: "regular",
-                          color: Colors.white)):const Text('ویرایش خدمت',
+                          color: Colors.white)):const Text('ویرایش دسته بندی',
                       style: TextStyle(
                           fontSize: 14.0,
                           fontFamily: "regular",

@@ -10,7 +10,7 @@ class UsersApiServer {
       getRegisteredUsersFromServer() async {
     try {
       Response response =
-          await dio.get('/user-reports-dashboard'); // مسیر درخواست
+          await dio.get('/user-reports-list'); // مسیر درخواست
       if (response.statusCode == 200) {
         // تبدیل داده‌های پاسخ به لیست مدل
         List<GetRegisteredUserDataModel> galleryData = (response.data as List)
