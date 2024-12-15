@@ -6,7 +6,7 @@ class GetCategoryDataModel {
   String createdAt;
   String updatedAt;
   String publishedAt;
-  List<Pic> pics;
+  List<Pic?> pics;
   List<Service> services;
 
   GetCategoryDataModel({
@@ -30,8 +30,8 @@ class GetCategoryDataModel {
       createdAt: json['createdAt'],
       updatedAt: json['updatedAt'],
       publishedAt: json['publishedAt'],
-      pics: (json['pics'] as List).map((e) => Pic.fromJson(e)).toList(),
-      services: (json['services'] as List).map((e) => Service.fromJson(e)).toList(),
+      pics: (json['pics'] as List?)?.map((e) => e != null ? Pic.fromJson(e) : null).toList() ?? [],
+      services: (json['services'] as List?)?.map((e) => Service.fromJson(e)).toList() ?? [],
     );
   }
 
@@ -44,7 +44,7 @@ class GetCategoryDataModel {
       'createdAt': createdAt,
       'updatedAt': updatedAt,
       'publishedAt': publishedAt,
-      'pics': pics.map((e) => e.toJson()).toList(),
+      'pics': pics.map((e) => e!.toJson()).toList(),
       'services': services.map((e) => e.toJson()).toList(),
     };
   }
@@ -78,11 +78,12 @@ class Pic {
       name: json['name'],
       alternativeText: json['alternativeText'],
       caption: json['caption'],
-      width: json['width'],
-      height: json['height'],
-      formats: Formats.fromJson(json['formats']),
+      width: json['width'] ?? 0,
+      height: json['height'] ?? 0,
+      formats: json['formats'] != null ? Formats.fromJson(json['formats']) : Formats.empty(),
     );
   }
+
 
   Map<String, dynamic> toJson() {
     return {
@@ -110,6 +111,16 @@ class Formats {
     required this.small,
     required this.large,
   });
+
+
+  static Formats empty() {
+    return Formats(
+      thumbnail: Format.empty(),
+      medium: Format.empty(),
+      small: Format.empty(),
+      large: Format.empty(),
+    );
+  }
 
   factory Formats.fromJson(Map<String, dynamic> json) {
     return Formats(
@@ -176,6 +187,19 @@ class Format {
       'url': url,
     };
   }
+
+  static Format empty() {
+    return Format(
+      name: '',
+      hash: '',
+      ext: '',
+      mime: '',
+      width: 0,
+      height: 0,
+      size: 0.0,
+      url: '',
+    );
+  }
 }
 
 class Service {
@@ -189,7 +213,7 @@ class Service {
   String publishedAt;
   bool isactive;
   String basePrice;
-  List<Option> options;
+  List<Option?> options;
 
   Service({
     required this.id,
@@ -216,10 +240,11 @@ class Service {
       updatedAt: json['updatedAt'],
       publishedAt: json['publishedAt'],
       isactive: json['isactive'],
-      basePrice: json['base_price'],
-      options: (json['options'] as List).map((e) => Option.fromJson(e)).toList(),
+      basePrice: json['base_price'] ?? '0',
+      options: (json['options'] as List?)?.map((e) => Option.fromJson(e)).toList() ?? [],
     );
   }
+
 
   Map<String, dynamic> toJson() {
     return {
@@ -233,7 +258,7 @@ class Service {
       'publishedAt': publishedAt,
       'isactive': isactive,
       'base_price': basePrice,
-      'options': options.map((e) => e.toJson()).toList(),
+      'options': options.map((e) => e!.toJson()).toList(),
     };
   }
 }

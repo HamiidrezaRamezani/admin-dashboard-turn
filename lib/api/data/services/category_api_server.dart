@@ -10,6 +10,7 @@ class CategoryApiServer {
       Response response = await dio.get('/categories?populate=*'); // مسیر درخواست
       if (response.statusCode == 200) {
         // تبدیل داده‌های پاسخ به مدل
+        print(response.data);
         return GetCategoryModel.fromJson(response.data);
       } else {
         print('Request failed: ${response.statusCode}');

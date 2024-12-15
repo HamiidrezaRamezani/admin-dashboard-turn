@@ -18,12 +18,10 @@ class Categories extends StatefulWidget {
 }
 
 class _CategoriesState extends State<Categories> {
-
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
   TextEditingController nameController = TextEditingController();
   TextEditingController describeController = TextEditingController();
-
 
   late Future<GetCategoryModel?> _futureData; // متغیر Future برای FutureBuilder
   final CategoryApiServer _apiServer = CategoryApiServer(); // نمونه کلاس API
@@ -38,7 +36,6 @@ class _CategoriesState extends State<Categories> {
   List<Map<String, String>> selectedService = [];
 
   final Dio dio = DioConfig().dio;
-
 
   bool isImageGetLoading = false;
 
@@ -56,7 +53,6 @@ class _CategoriesState extends State<Categories> {
       _futureData = _apiServer.getCategoryFromServer(); // فراخوانی درخواست GET
     });
   }
-
 
   // متد ارسال داده به سرور و دریافت مجدد داده‌ها
   Future<void> _deleteDataToServer(String documentId) async {
@@ -78,7 +74,6 @@ class _CategoriesState extends State<Categories> {
     }
   }
 
-
   // متد ارسال داده به سرور و دریافت مجدد داده‌ها
   Future<void> _postDataToServer(Map<String, dynamic> requestData) async {
     loadingDialog();
@@ -98,8 +93,6 @@ class _CategoriesState extends State<Categories> {
       if (mounted) Navigator.of(context).pop();
     }
   }
-
-
 
   @override
   Widget build(BuildContext context) {
@@ -137,12 +130,11 @@ class _CategoriesState extends State<Categories> {
                   ),
                   LayoutBuilder(
                     builder: (context, constraints) {
-                      double screenWidth =
-                          constraints.maxWidth; // عرض صفحه
+                      double screenWidth = constraints.maxWidth; // عرض صفحه
                       double itemWidth = screenWidth / 3 -
                           16; // عرض هر آیتم (یک‌سوم عرض صفحه با فاصله)
                       int crossAxisCount =
-                      screenWidth > 1024 ? 3 : 2; // تعداد ستون‌ها
+                          screenWidth > 1024 ? 3 : 2; // تعداد ستون‌ها
                       double itemHeight = itemWidth /
                           (16 / 9); // ارتفاع هر آیتم بر اساس نسبت 16:9
 
@@ -151,13 +143,12 @@ class _CategoriesState extends State<Categories> {
                         child: GridView.builder(
                           shrinkWrap: true,
                           gridDelegate:
-                          SliverGridDelegateWithFixedCrossAxisCount(
-                            crossAxisCount:
-                            crossAxisCount, // تعداد ستون‌ها
+                              SliverGridDelegateWithFixedCrossAxisCount(
+                            crossAxisCount: crossAxisCount, // تعداد ستون‌ها
                             crossAxisSpacing: 16.0, // فاصله افقی
                             mainAxisSpacing: 16.0, // فاصله عمودی
                             childAspectRatio:
-                            itemWidth / itemHeight, // نسبت تصویر
+                                itemWidth / itemHeight, // نسبت تصویر
                           ),
                           itemCount: items.length, // تعداد آیتم‌ها
                           itemBuilder: (context, index) {
@@ -166,64 +157,71 @@ class _CategoriesState extends State<Categories> {
                               children: [
                                 Positioned.fill(
                                   child: ClipRRect(
-                                    borderRadius:
-                                    BorderRadius.circular(8.0),
-                                    child: Image.network(
-                                      ConfigNetwork.baseUrlImage + item.pics[0].formats.medium.url,
-                                      fit: BoxFit.cover,
-                                      // تغییر fit به BoxFit.cover برای پر کردن کامل فضای موجود
-                                      loadingBuilder:
-                                          (BuildContext context,
-                                          Widget child,
-                                          ImageChunkEvent?
-                                          loadingProgress) {
-                                        if (loadingProgress == null) {
-                                          return child;
-                                        } else {
-                                          return Center(
-                                            child:
-                                            CircularProgressIndicator(
-                                              value: loadingProgress
-                                                  .expectedTotalBytes !=
-                                                  null
-                                                  ? loadingProgress
-                                                  .cumulativeBytesLoaded /
-                                                  (loadingProgress
-                                                      .expectedTotalBytes ??
-                                                      1)
-                                                  : null,
-                                            ),
-                                          );
-                                        }
-                                      },
-                                      errorBuilder: (BuildContext context,
-                                          Object error,
-                                          StackTrace? stackTrace) {
-                                        // در صورت بروز خطا، تصویر پیش‌فرض را نمایش بده
-                                        return ClipRRect(
-                                          borderRadius:
-                                          BorderRadius.circular(8.0),
-                                          child: Image.asset(
+                                    borderRadius: BorderRadius.circular(8.0),
+                                    child: (item.pics.isEmpty)
+                                        ? Image.asset(
                                             'assets/images/png/imageNotFound.png',
                                             fit: BoxFit
                                                 .cover, // تغییر fit به BoxFit.cover برای پر کردن فضای موجود
+                                          )
+                                        : Image.network(
+                                            ConfigNetwork.baseUrlImage +
+                                                item.pics[0]!.formats.medium
+                                                    .url,
+                                            fit: BoxFit.cover,
+                                            // تغییر fit به BoxFit.cover برای پر کردن کامل فضای موجود
+                                            loadingBuilder:
+                                                (BuildContext context,
+                                                    Widget child,
+                                                    ImageChunkEvent?
+                                                        loadingProgress) {
+                                              if (loadingProgress == null) {
+                                                return child;
+                                              } else {
+                                                return Center(
+                                                  child:
+                                                      CircularProgressIndicator(
+                                                    value: loadingProgress
+                                                                .expectedTotalBytes !=
+                                                            null
+                                                        ? loadingProgress
+                                                                .cumulativeBytesLoaded /
+                                                            (loadingProgress
+                                                                    .expectedTotalBytes ??
+                                                                1)
+                                                        : null,
+                                                  ),
+                                                );
+                                              }
+                                            },
+                                            errorBuilder: (BuildContext context,
+                                                Object error,
+                                                StackTrace? stackTrace) {
+                                              // در صورت بروز خطا، تصویر پیش‌فرض را نمایش بده
+                                              return ClipRRect(
+                                                borderRadius:
+                                                    BorderRadius.circular(8.0),
+                                                child: Image.asset(
+                                                  'assets/images/png/imageNotFound.png',
+                                                  fit: BoxFit
+                                                      .cover, // تغییر fit به BoxFit.cover برای پر کردن فضای موجود
+                                                ),
+                                              ); // تصویر پیش‌فرض
+                                            },
                                           ),
-                                        ); // تصویر پیش‌فرض
-                                      },
-                                    ),
                                   ),
                                 ),
-                                Positioned.fill(child: Container(
+                                Positioned.fill(
+                                    child: Container(
                                   decoration: BoxDecoration(
-                                      gradient: LinearGradient(colors: [
-                                        Colors.black.withOpacity(0.5),
-                                        Colors.black.withOpacity(0.05)
-                                      ],
+                                      gradient: LinearGradient(
+                                          colors: [
+                                            Colors.black.withOpacity(0.5),
+                                            Colors.black.withOpacity(0.05)
+                                          ],
                                           begin: Alignment.bottomCenter,
-                                          end: Alignment.topCenter
-                                      ),
-                                      borderRadius: BorderRadius.circular(8.0)
-                                  ),
+                                          end: Alignment.topCenter),
+                                      borderRadius: BorderRadius.circular(8.0)),
                                 )),
                                 Align(
                                   alignment: Alignment.bottomLeft,
@@ -233,29 +231,27 @@ class _CategoriesState extends State<Categories> {
                                     child: PopupMenuButton<String>(
                                       onSelected: (value) {
                                         // _deleteDataToServer(item.id);
-                                        _deleteDataToServer(
-                                            item.documentId);
+                                        _deleteDataToServer(item.documentId);
                                       },
-                                      itemBuilder:
-                                          (BuildContext context) {
+                                      itemBuilder: (BuildContext context) {
                                         return [
                                           const PopupMenuItem(
                                             value: "delete",
                                             child: Align(
                                                 alignment:
-                                                Alignment.centerRight,
+                                                    Alignment.centerRight,
                                                 child: Text("حذف",
                                                     style: TextStyle(
-                                                        color:
-                                                        Colors.black,
-                                                        fontFamily:
-                                                        "medium",
+                                                        color: Colors.black,
+                                                        fontFamily: "medium",
                                                         fontSize: 14.0))),
                                           ),
                                         ];
                                       },
-                                      icon: const Icon(Icons
-                                          .more_vert, color: Colors.white,), // آیکن سه‌نقطه
+                                      icon: const Icon(
+                                        Icons.more_vert,
+                                        color: Colors.white,
+                                      ), // آیکن سه‌نقطه
                                     ),
                                   ),
                                 ),
@@ -264,11 +260,13 @@ class _CategoriesState extends State<Categories> {
                                   child: Padding(
                                       padding: const EdgeInsets.only(
                                           right: 16.0, bottom: 16.0),
-                                      child: Text(item.name, style: TextStyle(
-                                          color: Color(0xFFFFFFFF),
-                                          fontFamily: "bold",
-                                          fontSize: 24.0),)
-                                  ),
+                                      child: Text(
+                                        item.name,
+                                        style: TextStyle(
+                                            color: Color(0xFFFFFFFF),
+                                            fontFamily: "bold",
+                                            fontSize: 24.0),
+                                      )),
                                 ),
                               ],
                             );
@@ -295,15 +293,12 @@ class _CategoriesState extends State<Categories> {
         label: const Text(
           'ایجاد دسته بندی',
           style: TextStyle(
-              color: Color(0xFFFFFFFF),
-              fontFamily: "bold",
-              fontSize: 16.0),
+              color: Color(0xFFFFFFFF), fontFamily: "bold", fontSize: 16.0),
         ),
         backgroundColor: const Color(0xFF628DFF),
       ),
     );
   }
-
 
   addEditItemsDialog(String documentId) {
     showDialog(
@@ -481,16 +476,16 @@ class _CategoriesState extends State<Categories> {
                                         alignment: Alignment.center,
                                         child: ClipRRect(
                                           borderRadius:
-                                          BorderRadius.circular(12.0),
+                                              BorderRadius.circular(12.0),
                                           child: CachedNetworkImage(
                                             imageUrl:
-                                            ConfigNetwork.baseUrlImage +
-                                                image.url,
+                                                ConfigNetwork.baseUrlImage +
+                                                    image.url,
                                             placeholder: (context, url) =>
-                                            const CircularProgressIndicator(),
+                                                const CircularProgressIndicator(),
                                             errorWidget:
                                                 (context, url, error) =>
-                                            const Icon(Icons.error),
+                                                    const Icon(Icons.error),
                                           ),
                                         ),
                                       ),
@@ -498,12 +493,12 @@ class _CategoriesState extends State<Categories> {
                                         alignment: Alignment.topRight,
                                         child: (image.isSelect == true)
                                             ? const Padding(
-                                          padding: EdgeInsets.all(8.0),
-                                          child: Icon(
-                                            Icons.check_box,
-                                            color: Colors.green,
-                                          ),
-                                        )
+                                                padding: EdgeInsets.all(8.0),
+                                                child: Icon(
+                                                  Icons.check_box,
+                                                  color: Colors.green,
+                                                ),
+                                              )
                                             : Container(),
                                       )
                                     ],
@@ -566,57 +561,61 @@ class _CategoriesState extends State<Categories> {
                                       Positioned.fill(
                                         child: ClipRRect(
                                           borderRadius:
-                                          BorderRadius.circular(12.0),
+                                              BorderRadius.circular(12.0),
                                           child: CachedNetworkImage(
                                             imageUrl:
-                                            ConfigNetwork.baseUrlImage +
-                                                service.imageUrl,
+                                                ConfigNetwork.baseUrlImage +
+                                                    service.imageUrl,
                                             placeholder: (context, url) =>
-                                            const CircularProgressIndicator(),
+                                                const CircularProgressIndicator(),
                                             errorWidget:
                                                 (context, url, error) =>
-                                            const Icon(Icons.error),
+                                                    const Icon(Icons.error),
                                             fit: BoxFit.fill,
                                           ),
                                         ),
                                       ),
                                       Align(
-                                        alignment: Alignment.bottomCenter,
-                                        child: Container(
-                                          width: 120.0,
-                                          height: 60.0,
-                                          decoration: BoxDecoration(
-                                            color: Colors.black,
-                                              borderRadius:
-                                              BorderRadius.circular(12.0),
-                                            gradient: LinearGradient(colors: [
-                                              Colors.black,
-                                              Colors.transparent
-                                            ], begin: Alignment.bottomCenter, end: Alignment.topCenter)
-                                          ),
-                                        )
-                                      ),
+                                          alignment: Alignment.bottomCenter,
+                                          child: Container(
+                                            width: 120.0,
+                                            height: 60.0,
+                                            decoration: BoxDecoration(
+                                                color: Colors.black,
+                                                borderRadius:
+                                                    BorderRadius.circular(12.0),
+                                                gradient: LinearGradient(
+                                                    colors: [
+                                                      Colors.black,
+                                                      Colors.transparent
+                                                    ],
+                                                    begin:
+                                                        Alignment.bottomCenter,
+                                                    end: Alignment.topCenter)),
+                                          )),
                                       Align(
                                         alignment: Alignment.bottomCenter,
                                         child: Padding(
                                           padding: const EdgeInsets.all(8.0),
-                                          child: Text(service.serviceName, style: TextStyle(
-                                                  fontSize: 14.0,
-                                                  fontFamily: "bold",
-                                                  color: Colors.white
-                                          ),),
+                                          child: Text(
+                                            service.serviceName,
+                                            style: TextStyle(
+                                                fontSize: 14.0,
+                                                fontFamily: "bold",
+                                                color: Colors.white),
+                                          ),
                                         ),
                                       ),
                                       Align(
                                         alignment: Alignment.topRight,
                                         child: (service.isSelect == true)
                                             ? const Padding(
-                                          padding: EdgeInsets.all(8.0),
-                                          child: Icon(
-                                            Icons.check_box,
-                                            color: Colors.green,
-                                          ),
-                                        )
+                                                padding: EdgeInsets.all(8.0),
+                                                child: Icon(
+                                                  Icons.check_box,
+                                                  color: Colors.green,
+                                                ),
+                                              )
                                             : Container(),
                                       )
                                     ],
@@ -646,9 +645,7 @@ class _CategoriesState extends State<Categories> {
                       shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(4.0))),
                   onPressed: () {
-
                     if (_formKey.currentState!.validate()) {
-
                       Map<String, dynamic> requestData = {
                         "data": {
                           "name": nameController.text,
@@ -660,7 +657,6 @@ class _CategoriesState extends State<Categories> {
 
                       _postDataToServer(requestData);
                       Navigator.of(context).pop();
-
                     }
 
                     // عملکرد ارسال اطلاعات
@@ -725,15 +721,17 @@ class _CategoriesState extends State<Categories> {
                     //   }
                     // }
                   },
-                  child: (documentId == '')? const Text('ایجاد دسته بندی',
-                      style: TextStyle(
-                          fontSize: 14.0,
-                          fontFamily: "regular",
-                          color: Colors.white)):const Text('ویرایش دسته بندی',
-                      style: TextStyle(
-                          fontSize: 14.0,
-                          fontFamily: "regular",
-                          color: Colors.white)),
+                  child: (documentId == '')
+                      ? const Text('ایجاد دسته بندی',
+                          style: TextStyle(
+                              fontSize: 14.0,
+                              fontFamily: "regular",
+                              color: Colors.white))
+                      : const Text('ویرایش دسته بندی',
+                          style: TextStyle(
+                              fontSize: 14.0,
+                              fontFamily: "regular",
+                              color: Colors.white)),
                 ),
                 TextButton(
                   style: ElevatedButton.styleFrom(
@@ -764,31 +762,30 @@ class _CategoriesState extends State<Categories> {
         context: context,
         barrierDismissible: false,
         builder: (context) => AlertDialog(
-          backgroundColor: Colors.black,
-          content: Container(
-            height: 120.0,
-            child: const Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  CircularProgressIndicator(
-                    color: Colors.white,
+              backgroundColor: Colors.black,
+              content: Container(
+                height: 120.0,
+                child: const Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      CircularProgressIndicator(
+                        color: Colors.white,
+                      ),
+                      SizedBox(
+                        height: 24.0,
+                      ),
+                      Text('در حال دریافت اطلاعات',
+                          style: TextStyle(
+                              color: Colors.white,
+                              fontFamily: "bold",
+                              fontSize: 16.0))
+                    ],
                   ),
-                  SizedBox(
-                    height: 24.0,
-                  ),
-                  Text('در حال دریافت اطلاعات',
-                      style: TextStyle(
-                          color: Colors.white,
-                          fontFamily: "bold",
-                          fontSize: 16.0))
-                ],
+                ),
               ),
-            ),
-          ),
-        ));
+            ));
   }
-
 
   Future<List<GetGalleryDataModel>?> getGalleryFromServer() async {
     setState(() {
@@ -834,7 +831,7 @@ class _CategoriesState extends State<Categories> {
   void toggleSelection(String id) {
     // بررسی وجود آیتم در لیست
     final existingIndex =
-    selectedImages.indexWhere((element) => element["id"] == id);
+        selectedImages.indexWhere((element) => element["id"] == id);
 
     if (existingIndex != -1) {
       // اگر آیتم موجود باشد، حذف کن
@@ -847,11 +844,7 @@ class _CategoriesState extends State<Categories> {
     }
   }
 
-
-
   Future<List<GetServicesDataModel>?> getServicesFromServer() async {
-
-
     setState(() {
       serviceFromServicesForSelect.clear();
       isImageGetLoading = false;
@@ -861,9 +854,8 @@ class _CategoriesState extends State<Categories> {
       if (response.statusCode == 200) {
         // تبدیل داده‌های پاسخ به لیست مدل
         final data = response.data['data'] as List<dynamic>;
-        List<GetServicesDataModel> galleryData = data
-            .map((item) => GetServicesDataModel.fromJson(item))
-            .toList();
+        List<GetServicesDataModel> galleryData =
+            data.map((item) => GetServicesDataModel.fromJson(item)).toList();
 
         setState(() {
           isImageGetLoading = true;
@@ -894,12 +886,10 @@ class _CategoriesState extends State<Categories> {
     }
   }
 
-
-
   void toggleSelectionServices(String id) {
     // بررسی وجود آیتم در لیست
     final existingIndex =
-    selectedService.indexWhere((element) => element["id"] == id);
+        selectedService.indexWhere((element) => element["id"] == id);
 
     if (existingIndex != -1) {
       // اگر آیتم موجود باشد، حذف کن
@@ -911,10 +901,7 @@ class _CategoriesState extends State<Categories> {
       });
     }
   }
-
-
 }
-
 
 class ImageItemList {
   String name;
@@ -924,11 +911,10 @@ class ImageItemList {
 
   ImageItemList(
       {required this.name,
-        required this.imageId,
-        required this.url,
-        required this.isSelect});
+      required this.imageId,
+      required this.url,
+      required this.isSelect});
 }
-
 
 class ServicesItemList {
   String serviceName;
@@ -938,7 +924,7 @@ class ServicesItemList {
 
   ServicesItemList(
       {required this.serviceName,
-        required this.serviceId,
-        required this.imageUrl,
-        required this.isSelect});
+      required this.serviceId,
+      required this.imageUrl,
+      required this.isSelect});
 }
