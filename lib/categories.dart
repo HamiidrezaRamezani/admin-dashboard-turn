@@ -6,7 +6,6 @@ import 'package:turn_rating_launcher/api/models/services_models/get_services_dat
 
 import 'api/data/services/category_api_server.dart';
 import 'api/models/gallery_models/get_gallery_data_model.dart';
-import 'api/models/services_to_server_model.dart';
 import 'api/utils/config_network.dart';
 import 'api/utils/dio_config.dart';
 
@@ -64,10 +63,8 @@ class _CategoriesState extends State<Categories> {
         // در صورت موفقیت، داده‌ها را مجدد دریافت کنید
         _fetchData();
       } else {
-        print("POST request failed.");
       }
     } catch (e) {
-      print("Error posting data: $e");
     } finally {
       // بستن دیالوگ لودینگ
       if (mounted) Navigator.of(context).pop();
@@ -84,10 +81,8 @@ class _CategoriesState extends State<Categories> {
         // در صورت موفقیت، داده‌ها را مجدد دریافت کنید
         _fetchData();
       } else {
-        print("POST request failed.");
       }
     } catch (e) {
-      print("Error posting data: $e");
     } finally {
       // بستن دیالوگ لودینگ
       if (mounted) Navigator.of(context).pop();
@@ -813,16 +808,13 @@ class _CategoriesState extends State<Categories> {
 
         return galleryData;
       } else {
-        print('Request failed: ${response.statusCode}');
         return null;
       }
     } catch (e) {
       if (e is DioError) {
         // مدیریت خطاهای مربوط به Dio
-        print('DioError: ${e.response?.data ?? e.message}');
       } else {
         // مدیریت سایر خطاها
-        print('Unexpected error: $e');
       }
       return null;
     }
@@ -871,16 +863,13 @@ class _CategoriesState extends State<Categories> {
 
         return galleryData;
       } else {
-        print('Request failed: ${response.statusCode}');
         return null;
       }
     } catch (e) {
       if (e is DioError) {
         // مدیریت خطاهای مربوط به Dio
-        print('DioError: ${e.response?.data ?? e.message}');
       } else {
         // مدیریت سایر خطاها
-        print('Unexpected error: $e');
       }
       return null;
     }

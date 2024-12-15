@@ -15,8 +15,9 @@ class GetRegisteredUserDataModel {
   final String? locale;
   final String? name;
   final String? nationalCode;
+  final String? phoneNumber;
   final int totalTickets;
-  final int totalAmountSpent;
+  final int? totalAmountSpent;
   final String serviceListString;
 
   GetRegisteredUserDataModel({
@@ -36,6 +37,7 @@ class GetRegisteredUserDataModel {
     this.locale,
     this.name,
     this.nationalCode,
+    this.phoneNumber,
     required this.totalTickets,
     required this.totalAmountSpent,
     required this.serviceListString,
@@ -60,6 +62,7 @@ class GetRegisteredUserDataModel {
       locale: json['locale'],
       name: json['name'],
       nationalCode: json['national_code'],
+      phoneNumber: json['phone_number'],
       totalTickets: json['totalTickets'],
       totalAmountSpent: json['totalAmountSpent'],
       serviceListString: json['serviceListString'],
@@ -85,6 +88,7 @@ class GetRegisteredUserDataModel {
       'locale': locale,
       'name': name,
       'national_code': nationalCode,
+      'phone_number': phoneNumber,
       'totalTickets': totalTickets,
       'totalAmountSpent': totalAmountSpent,
       'serviceListString': serviceListString,

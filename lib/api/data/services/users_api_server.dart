@@ -8,10 +8,14 @@ class UsersApiServer {
 
   Future<List<GetRegisteredUserDataModel>?>
       getRegisteredUsersFromServer(String paymentGroupId) async {
+    print('paymentGroupId');
+    print(paymentGroupId);
+    print('paymentGroupId');
     try {
       Response response =
-          await dio.get('/user-reports-list/$paymentGroupId'); // مسیر درخواست
+          await dio.get((paymentGroupId == '')?'/user-reports-list/':'/user-reports-list/$paymentGroupId'); // مسیر درخواست
       if (response.statusCode == 200) {
+        print("wwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwww");
         // تبدیل داده‌های پاسخ به لیست مدل
         List<GetRegisteredUserDataModel> galleryData = (response.data as List)
             .map((item) => GetRegisteredUserDataModel.fromJson(item))

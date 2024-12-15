@@ -333,29 +333,29 @@ class _UsersState extends State<Users> with SingleTickerProviderStateMixin {
                                         const SizedBox(
                                           width: 24.0,
                                         ),
-                                        PopupMenuButton<String>(
-                                          onSelected: (value) {
-                                            _deleteDataToServer(item.id);
-                                          },
-                                          itemBuilder: (BuildContext context) {
-                                            return [
-                                              const PopupMenuItem(
-                                                value: "delete",
-                                                child: Align(
-                                                    alignment:
-                                                        Alignment.centerRight,
-                                                    child: Text("حذف",
-                                                        style: TextStyle(
-                                                            color: Colors.black,
-                                                            fontFamily:
-                                                                "medium",
-                                                            fontSize: 14.0))),
-                                              ),
-                                            ];
-                                          },
-                                          icon: const Icon(
-                                              Icons.more_vert), // آیکن سه‌نقطه
-                                        ),
+                                        // PopupMenuButton<String>(
+                                        //   onSelected: (value) {
+                                        //     _deleteDataToServer(item.id);
+                                        //   },
+                                        //   itemBuilder: (BuildContext context) {
+                                        //     return [
+                                        //       const PopupMenuItem(
+                                        //         value: "delete",
+                                        //         child: Align(
+                                        //             alignment:
+                                        //                 Alignment.centerRight,
+                                        //             child: Text("حذف",
+                                        //                 style: TextStyle(
+                                        //                     color: Colors.black,
+                                        //                     fontFamily:
+                                        //                         "medium",
+                                        //                     fontSize: 14.0))),
+                                        //       ),
+                                        //     ];
+                                        //   },
+                                        //   icon: const Icon(
+                                        //       Icons.more_vert), // آیکن سه‌نقطه
+                                        // ),
                                       ],
                                     ));
                               }));
@@ -815,33 +815,33 @@ class _UsersState extends State<Users> with SingleTickerProviderStateMixin {
                                                   const SizedBox(
                                                     width: 24.0,
                                                   ),
-                                                  PopupMenuButton<String>(
-                                                    onSelected: (value) {
-                                                      _deleteDataToServer(
-                                                          item.id);
-                                                    },
-                                                    itemBuilder:
-                                                        (BuildContext context) {
-                                                      return [
-                                                        const PopupMenuItem(
-                                                          value: "delete",
-                                                          child: Align(
-                                                              alignment: Alignment
-                                                                  .centerRight,
-                                                              child: Text("حذف",
-                                                                  style: TextStyle(
-                                                                      color: Colors
-                                                                          .black,
-                                                                      fontFamily:
-                                                                          "medium",
-                                                                      fontSize:
-                                                                          14.0))),
-                                                        ),
-                                                      ];
-                                                    },
-                                                    icon: const Icon(Icons
-                                                        .more_vert), // آیکن سه‌نقطه
-                                                  ),
+                                                  // PopupMenuButton<String>(
+                                                  //   onSelected: (value) {
+                                                  //     _deleteDataToServer(
+                                                  //         item.id);
+                                                  //   },
+                                                  //   itemBuilder:
+                                                  //       (BuildContext context) {
+                                                  //     return [
+                                                  //       const PopupMenuItem(
+                                                  //         value: "delete",
+                                                  //         child: Align(
+                                                  //             alignment: Alignment
+                                                  //                 .centerRight,
+                                                  //             child: Text("حذف",
+                                                  //                 style: TextStyle(
+                                                  //                     color: Colors
+                                                  //                         .black,
+                                                  //                     fontFamily:
+                                                  //                         "medium",
+                                                  //                     fontSize:
+                                                  //                         14.0))),
+                                                  //       ),
+                                                  //     ];
+                                                  //   },
+                                                  //   icon: const Icon(Icons
+                                                  //       .more_vert), // آیکن سه‌نقطه
+                                                  // ),
                                                 ],
                                               ));
                                         }));
