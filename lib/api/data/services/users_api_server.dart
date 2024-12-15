@@ -7,10 +7,10 @@ class UsersApiServer {
   final Dio dio = DioConfig().dio;
 
   Future<List<GetRegisteredUserDataModel>?>
-      getRegisteredUsersFromServer() async {
+      getRegisteredUsersFromServer(String paymentGroupId) async {
     try {
       Response response =
-          await dio.get('/user-reports-list'); // مسیر درخواست
+          await dio.get('/user-reports-list/$paymentGroupId'); // مسیر درخواست
       if (response.statusCode == 200) {
         // تبدیل داده‌های پاسخ به لیست مدل
         List<GetRegisteredUserDataModel> galleryData = (response.data as List)

@@ -27,8 +27,16 @@ class _UsersState extends State<Users> with SingleTickerProviderStateMixin {
   final PaymentGroupApiServer _apiPaymentServer =
       PaymentGroupApiServer(); // نمونه کلاس API
 
-  PaymentOption? _selectedItem; // آیتم انتخاب‌شده
-  List<PaymentOption> _dropdownItems = []; // لیست آیتم‌ها
+  // لیست آیتم‌ها (این لیست از سرور دریافت می‌شود)
+  final List<DropdownItem> _items = [
+    // DropdownItem(id: 'ID-101', name: 'گزینه ۱'),
+    // DropdownItem(id: 'ID-102', name: 'گزینه ۲'),
+    // DropdownItem(id: 'ID-103', name: 'گزینه ۳'),
+    // DropdownItem(id: 'ID-104', name: 'گزینه ۴'),
+  ];
+
+  // ذخیره آیتم انتخاب‌شده
+  DropdownItem? _selectedItem;
 
 
   // متد برای مقداردهی Future
@@ -47,15 +55,15 @@ class _UsersState extends State<Users> with SingleTickerProviderStateMixin {
   @override
   void initState() {
     super.initState();
-    _futureDataUsers = _fetchData();
+    _futureDataUsers = _fetchRegisteredUsersData('');
     _futureDataAllUsers = _fetchDataAllUser();
     tabController = TabController(length: 2, vsync: this);
     _fetchPayment();
   }
 
-  Future<List<GetRegisteredUserDataModel?>> _fetchData() async {
+  Future<List<GetRegisteredUserDataModel?>> _fetchRegisteredUsersData(String paymentGroupId) async {
     try {
-      return await _apiServer.getRegisteredUsersFromServer() ?? [];
+      return await _apiServer.getRegisteredUsersFromServer(paymentGroupId) ?? [];
     } catch (e) {
       return [];
     }
@@ -81,7 +89,7 @@ class _UsersState extends State<Users> with SingleTickerProviderStateMixin {
         setState(() {
           // به روز رسانی _futureData با داده‌های جدید
           _futureDataUsers =
-              _fetchData(); // اینجا متغیر Future را به روز می‌کنید
+              _fetchRegisteredUsersData(''); // اینجا متغیر Future را به روز می‌کنید
           _futureDataAllUsers = _fetchDataAllUser();
         });
       } else {
@@ -367,7 +375,7 @@ class _UsersState extends State<Users> with SingleTickerProviderStateMixin {
             Expanded(
                 flex: 4,
                 child: ListView(
-                  physics: const NeverScrollableScrollPhysics(),
+                  physics: const AlwaysScrollableScrollPhysics(),
                   shrinkWrap: true,
                   children: [
                     Container(
@@ -389,7 +397,7 @@ class _UsersState extends State<Users> with SingleTickerProviderStateMixin {
                                 builder: (context, snapshot) {
                                   if (snapshot.connectionState ==
                                       ConnectionState.waiting) {
-                                    _dropdownItems.clear();
+                                    _items.clear();
                                     return const Center(
                                       child: CircularProgressIndicator(),
                                     );
@@ -399,11 +407,16 @@ class _UsersState extends State<Users> with SingleTickerProviderStateMixin {
                                     );
                                   } else if (snapshot.hasData &&
                                       snapshot.data != null) {
-                                    _dropdownItems.clear();
-                                    final items = snapshot.data!.data;
-                                    for (var element in items) {
-                                      print(element.name);
-                                      _dropdownItems.add(PaymentOption(id: element.id.toString(), name: element.name));
+                                    if (_items.isEmpty) {
+                                      // فقط زمانی که لیست خالی است، آن را پر می‌کنیم
+                                      final items = snapshot.data!.data;
+                                      for (var element in items) {
+                                        print(element.name);
+                                        _items.add(DropdownItem(
+                                          id: element.id.toString(),
+                                          name: element.name,
+                                        ));
+                                      }
                                     }
                                     return Padding(
                                         padding: const EdgeInsets.all(16.0),
@@ -414,65 +427,33 @@ class _UsersState extends State<Users> with SingleTickerProviderStateMixin {
                                                   .withOpacity(0.1),
                                           borderRadius: const BorderRadius.all(Radius.circular(8.0))
                                           ),
-                                          child: _dropdownItems.isEmpty
+                                          child: _items.isEmpty
                                               ? const CircularProgressIndicator() // در حال بارگذاری
                                               : Padding(
                                                   padding:
                                                       const EdgeInsets.only(left: 8.0, right: 8.0),
-                                                  child: DropdownButton<PaymentOption>(
-                                                    hint: const Text('انتخاب نوع پرداخت'), // پیام پیش‌فرض
-                                                    value: _selectedItem, // آیتم انتخاب‌شده
-                                                    onChanged: (newValue) {
+                                                  child: DropdownButton<DropdownItem>(
+                                                    hint: const Text('یک گزینه انتخاب کنید'),
+                                                    value: _selectedItem,
+                                                    onChanged: (DropdownItem? newValue) {
                                                       setState(() {
-                                                        _selectedItem = newValue; // تنظیم آیتم جدید
+                                                        _selectedItem = newValue;
                                                       });
 
-                                                      // دسترسی به ID آیتم انتخاب‌شده
-                                                      if (_selectedItem != null) {
-                                                        print('Selected ID: ${_selectedItem!.id}');
+                                                      // چاپ ID یونیک آیتم انتخاب‌شده
+                                                      if (newValue != null) {
+                                                        print('Selected Item: ${newValue.name}');
+                                                        print('Unique ID: ${newValue.id}');
+                                                        _futureDataUsers = _fetchRegisteredUsersData(newValue.id);
                                                       }
                                                     },
-                                                    items: _dropdownItems.map((item) {
-                                                      return DropdownMenuItem<PaymentOption>(
+                                                    items: _items.map((DropdownItem item) {
+                                                      return DropdownMenuItem<DropdownItem>(
                                                         value: item,
                                                         child: Text(item.name),
                                                       );
                                                     }).toList(),
                                                   ),
-                                                  // child: DropdownButton<String>(
-                                                  //   focusColor: Colors.transparent,
-                                                  //   underline: Container(),
-                                                  //   hint: const Text(
-                                                  //     'یک آیتم انتخاب کنید',
-                                                  //     style: const TextStyle(
-                                                  //         color: Colors.black,
-                                                  //         fontFamily: "medium",
-                                                  //         fontSize: 14.0),
-                                                  //   ),
-                                                  //   value: _selectedItem,
-                                                  //   onChanged: (newValue) {
-                                                  //     setState(() {
-                                                  //       _selectedItem =
-                                                  //           newValue;
-                                                  //     });
-                                                  //   },
-                                                  //   items: _dropdownItems
-                                                  //       .map((item) {
-                                                  //     return DropdownMenuItem<
-                                                  //         String>(
-                                                  //       value:
-                                                  //           item.name, // مقدار انتخابی
-                                                  //       child: Text(item.name,
-                                                  //           style: const TextStyle(
-                                                  //               color: Colors
-                                                  //                   .black,
-                                                  //               fontFamily:
-                                                  //                   "medium",
-                                                  //               fontSize:
-                                                  //                   14.0)), // متن نمایش داده شده
-                                                  //     );
-                                                  //   }).toList(),
-                                                  // ),
                                                 ),
                                         ));
                                   } else {
@@ -523,9 +504,20 @@ class _UsersState extends State<Users> with SingleTickerProviderStateMixin {
                             }
                             return Padding(
                                 padding: const EdgeInsets.all(16.0),
-                                child: ListView.builder(
+                                child: (items.isEmpty)?const Center(
+                                  child: SizedBox(
+                                    height: 120.0,
+                                    child: Column(
+                                      children: [
+                                        Text("کاربری در این گروه موجود نیست!",style: TextStyle(
+                                            color: Colors.black, fontFamily: "medium", fontSize: 16.0),)
+                                      ],
+                                    ),
+                                  ),
+                                ):ListView.builder(
                                     itemCount: items.length,
                                     shrinkWrap: true,
+                                    physics: NeverScrollableScrollPhysics(),
                                     itemBuilder:
                                         (BuildContext context, int index) {
                                       var item = items[index];
@@ -836,7 +828,7 @@ class _UsersState extends State<Users> with SingleTickerProviderStateMixin {
                                             ],
                                           ));
                                     }));
-                          } else {
+                          }else {
                             return const Center(
                               child: Text('No data available'),
                             );
@@ -959,8 +951,10 @@ class _UsersState extends State<Users> with SingleTickerProviderStateMixin {
   }
 }
 
-class PaymentOption {
-  String name ;
-  String id;
-  PaymentOption({required this.id, required this.name});
+// مدل آیتم‌ها
+class DropdownItem {
+  final String id;
+  final String name;
+
+  DropdownItem({required this.id, required this.name});
 }
